@@ -40,7 +40,6 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
         RoleEntity roles = roleRepo.findByName("USER").orElse(null);
         user.setRoles(Collections.singleton(roles));
-
         userRepo.save(user);
     }
 
