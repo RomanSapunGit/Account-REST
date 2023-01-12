@@ -1,10 +1,10 @@
-package com.example.AccountRest.service;
+package com.example.accountRest.service;
 
-import com.example.AccountRest.dto.SignUpDTO;
-import com.example.AccountRest.entity.RoleEntity;
-import com.example.AccountRest.entity.UserEntity;
-import com.example.AccountRest.repository.RoleRepository;
-import com.example.AccountRest.repository.UserRepository;
+import com.example.accountRest.dto.SignUpDTO;
+import com.example.accountRest.entity.RoleEntity;
+import com.example.accountRest.entity.UserEntity;
+import com.example.accountRest.repository.RoleRepository;
+import com.example.accountRest.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +94,7 @@ public class UserService {
         String content = "<p>Hello,</p>"
                 + "<p>You have requested to reset your password.</p>"
                 + "<p>Click the link below to change your password:</p>"
-                + "<p><a href=\"" + link + "\">Change my password</a></p>"
+                + "<p>\"" + link + "\"</p>"
                 + "<br>"
                 + "<p>Ignore this email if you do remember your password, "
                 + "or you have not made the request.</p>";

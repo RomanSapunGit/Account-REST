@@ -1,4 +1,4 @@
-package com.example.AccountRest.security;
+package com.example.accountRest.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

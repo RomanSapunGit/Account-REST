@@ -1,4 +1,4 @@
-package com.example.AccountRest.dto;
+package com.example.accountRest.dto;
 
 import lombok.Data;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.example.AccountRest.utility;
+package com.example.accountRest.utility;
 
 import jakarta.servlet.http.HttpServletRequest;
 

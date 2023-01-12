@@ -1,4 +1,4 @@
-package com.example.AccountRest;
+package com.example.accountRest;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

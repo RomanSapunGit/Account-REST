@@ -1,4 +1,4 @@
-package com.example.AccountRest.security;
+package com.example.accountRest.security;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;

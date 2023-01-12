@@ -1,10 +1,10 @@
-package com.example.AccountRest.controller;
+package com.example.accountRest.controller;
 
-import com.example.AccountRest.dto.LoginDTO;
-import com.example.AccountRest.dto.SignUpDTO;
-import com.example.AccountRest.repository.UserRepository;
-import com.example.AccountRest.service.UserService;
-import com.example.AccountRest.utility.Utility;
+import com.example.accountRest.dto.LoginDTO;
+import com.example.accountRest.dto.SignUpDTO;
+import com.example.accountRest.repository.UserRepository;
+import com.example.accountRest.service.UserService;
+import com.example.accountRest.utility.Utility;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;

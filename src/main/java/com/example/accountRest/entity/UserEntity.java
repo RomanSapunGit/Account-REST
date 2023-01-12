@@ -1,4 +1,4 @@
-package com.example.AccountRest.entity;
+package com.example.accountRest.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,7 +1,7 @@
-package com.example.AccountRest.security;
+package com.example.accountRest.security;
 
-import com.example.AccountRest.entity.UserEntity;
-import com.example.AccountRest.repository.UserRepository;
+import com.example.accountRest.entity.UserEntity;
+import com.example.accountRest.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

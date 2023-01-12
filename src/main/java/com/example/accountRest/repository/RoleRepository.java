@@ -1,6 +1,6 @@
-package com.example.AccountRest.repository;
+package com.example.accountRest.repository;
 
-import com.example.AccountRest.entity.RoleEntity;
+import com.example.accountRest.entity.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
