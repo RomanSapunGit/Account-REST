@@ -10,4 +10,5 @@ import lombok.Setter;
 public class LoginDTO {
     private String usernameOrEmail;
     private String password;
+    private String role;
 }

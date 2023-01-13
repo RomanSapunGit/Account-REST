@@ -19,10 +19,11 @@ import java.util.Set;
 public class UserEntity {
         @jakarta.persistence.Id
         @GeneratedValue(strategy = GenerationType.SEQUENCE)
-        @Column(name = "id", nullable = false)
+        @Column(name = "id", nullable = false,unique = true)
         private Long id;
         private String name;
         private String username;
+        @Column( nullable = false, unique = true)
         private String email;
         private String password;
         private String token;
@@ -31,9 +32,9 @@ public class UserEntity {
 
         @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
         @JoinTable(name = "user_roles",
-                joinColumns = @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id"),
-                inverseJoinColumns = @JoinColumn(name = "role_id", nullable = false, referencedColumnName = "id"))
-        private Set<RoleEntity> roles;
+                joinColumns = {@JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id"), @JoinColumn(name = "user_email", nullable = false, referencedColumnName = "email")},
+                inverseJoinColumns = @JoinColumn(name = "role_id", nullable = false, referencedColumnName = "id") )
+                private Set<RoleEntity> roles;
 
 
 }

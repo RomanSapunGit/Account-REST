@@ -1,5 +1,7 @@
 package com.example.accountRest.security;
 
+import com.example.accountRest.entity.RoleEntity;
+import com.example.accountRest.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +20,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+
+    RoleEntity roleEntity;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -43,13 +47,20 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers(HttpMethod.GET, "/user/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/user/**").permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/user/**").permitAll()
-                                .requestMatchers("/api/user/**").permitAll()
-                                .anyRequest().authenticated());
+                {
+                    try {
+                        authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/users/**").hasRole("USER")
+                                .anyRequest().authenticated().and().httpBasic();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         return http.build();
-
     }
+
 }
 
