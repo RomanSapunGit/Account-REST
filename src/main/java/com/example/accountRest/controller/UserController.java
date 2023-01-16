@@ -1,6 +1,6 @@
 package com.example.accountRest.controller;
 
-import com.example.accountRest.dto.LoginDTO;
+import com.example.accountRest.dto.UserDTO;
 import com.example.accountRest.dto.SignUpDTO;
 import com.example.accountRest.repository.UserRepository;
 import com.example.accountRest.service.UserService;
@@ -32,9 +32,9 @@ public class UserController {
     private UserService service;
 
     @PostMapping("/signin")
-    public ResponseEntity<String> authenticateUser(@RequestBody LoginDTO loginDto) {
+    public ResponseEntity<String> authenticateUser(@RequestBody UserDTO userDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginDto.getUsernameOrEmail(), loginDto.getPassword()));
+                userDto.getUsernameOrEmail(), userDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return new ResponseEntity<>("User signed-in successfully!.", HttpStatus.OK);
     }

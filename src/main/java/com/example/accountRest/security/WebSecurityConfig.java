@@ -1,7 +1,6 @@
 package com.example.accountRest.security;
 
-import com.example.accountRest.entity.RoleEntity;
-import com.example.accountRest.entity.UserEntity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,8 +19,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
-
-    RoleEntity roleEntity;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
