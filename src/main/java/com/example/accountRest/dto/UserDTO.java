@@ -1,6 +1,7 @@
 package com.example.accountRest.dto;
 
 
+import com.example.accountRest.entity.UserEntity;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,4 +16,5 @@ public class UserDTO {
     private String password;
     private String role;
     private List<TaskDTO> tasks;
+
 }

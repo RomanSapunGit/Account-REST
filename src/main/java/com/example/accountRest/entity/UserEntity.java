@@ -1,5 +1,7 @@
 package com.example.accountRest.entity;
 
+import com.example.accountRest.dto.TaskDTO;
+import com.example.accountRest.dto.UserDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -31,6 +34,7 @@ public class UserEntity {
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime tokenCreationDate;
 
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles",
             joinColumns = {@JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")},
@@ -39,5 +43,4 @@ public class UserEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<TaskEntity> task;
-
 }
