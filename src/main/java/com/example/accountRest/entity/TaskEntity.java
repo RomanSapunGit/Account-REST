@@ -13,6 +13,7 @@ import lombok.Setter;
 public class TaskEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
     private Long id;
     private String task;
     private boolean completed;
