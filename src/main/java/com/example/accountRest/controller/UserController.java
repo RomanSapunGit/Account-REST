@@ -1,6 +1,6 @@
 package com.example.accountRest.controller;
 
-import com.example.accountRest.dto.UserDTO;
+import com.example.accountRest.dto.SignInDTO;
 import com.example.accountRest.dto.SignUpDTO;
 import com.example.accountRest.repository.UserRepository;
 import com.example.accountRest.service.UserService;
@@ -32,9 +32,9 @@ public class UserController {
     private UserService service;
 
     @PostMapping("/signin")
-    public ResponseEntity<String> authenticateUser(@RequestBody UserDTO userDto) {
+    public ResponseEntity<String> authenticateUser(@RequestBody SignInDTO userDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                userDto.getUsernameOrEmail(), userDto.getPassword()));
+                userDto.getUsername(), userDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return new ResponseEntity<>("User signed-in successfully!.", HttpStatus.OK);
     }
@@ -56,7 +56,8 @@ public class UserController {
     }
 
     @PostMapping("/forgot_password")
-    public ResponseEntity<String> forgotPassword(@RequestBody SignUpDTO signUpDTO, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<String> forgotPassword(@RequestBody SignUpDTO signUpDTO,
+                                                 HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
         String email = signUpDTO.getEmail();
         String response = service.forgotPassword(email);
         if (!response.startsWith("Invalid")) {

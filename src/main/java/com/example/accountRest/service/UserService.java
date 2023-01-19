@@ -3,10 +3,12 @@ package com.example.accountRest.service;
 import com.example.accountRest.dto.SignUpDTO;
 import com.example.accountRest.entity.RoleEntity;
 import com.example.accountRest.entity.UserEntity;
+import com.example.accountRest.exception.UserNotFoundException;
 import com.example.accountRest.repository.RoleRepository;
 import com.example.accountRest.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -42,22 +44,24 @@ public class UserService {
         user.setRoles(Collections.singleton(roles));
         userRepo.save(user);
     }
-
+@SneakyThrows
     public String forgotPassword(String email) {
         Boolean booToken = userRepo.existsByEmail(email);
         if (!booToken) {
             return "Invalid email";
         }
-        UserEntity user = userRepo.findByEmail(email);
+        UserEntity user = userRepo.findByEmail(email).orElse(null);
+        if(user == null){
+            throw new UserNotFoundException("user not found");
+        }
         user.setToken(generateToken());
         user.setTokenCreationDate(LocalDateTime.now());
         user = userRepo.save(user);
         return user.getToken();
     }
-
+@SneakyThrows
     public String resetPassword(String token, String password) {
-        Optional<UserEntity> userOptional = Optional
-                .ofNullable(userRepo.findByToken(token));
+        Optional<UserEntity> userOptional = (userRepo.findByToken(token));
         if (userOptional.isEmpty()) {
             return "invalid token!";
         }
@@ -65,7 +69,10 @@ public class UserService {
         if (isTokenExpired(tokenCreationDate)) {
             return "Token expired.";
         }
-        UserEntity user = userRepo.findByToken(token);
+        UserEntity user = (userRepo.findByToken(token).orElse(null));
+        if(user == null){
+            throw new UserNotFoundException("User not found");
+        }
         user.setPassword(passwordEncoder.encode(password));
         user.setToken(null);
         user.setTokenCreationDate(null);

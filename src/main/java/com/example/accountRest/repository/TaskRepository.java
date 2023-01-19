@@ -1,6 +1,5 @@
 package com.example.accountRest.repository;
 
-import com.example.accountRest.dto.TaskDTO;
 import com.example.accountRest.entity.TaskEntity;
 import com.example.accountRest.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,8 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
-    TaskEntity save(TaskEntity task);
+
     Optional<TaskEntity> findById(Long id);
 
-    List<TaskDTO> getAllByUser(UserEntity user);
+    List<TaskEntity> getAllByUser(UserEntity user);
+
 }
