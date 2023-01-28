@@ -3,6 +3,7 @@ package com.example.accountrest.controller;
 import com.example.accountrest.dto.ResetPassDTO;
 import com.example.accountrest.dto.SignInDTO;
 import com.example.accountrest.dto.SignUpDTO;
+import com.example.accountrest.exception.UserNotFoundException;
 import com.example.accountrest.repository.UserRepository;
 import com.example.accountrest.service.UserService;
 import com.example.accountrest.util.GetSiteURL;
@@ -54,16 +55,27 @@ public class UserController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestParam String email,
-                                                 HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
-        String userToken = service.setTokensByEmail(email);
-        String resetPasswordLink = GetSiteURL.getSiteURL(request) + "/api/user/reset_password?token=" + userToken;
-        service.sendEmail(email, resetPasswordLink);
-        return new ResponseEntity<>("We have sent your token on email", HttpStatus.OK);
-    }
+                                                 HttpServletRequest request) throws  UnsupportedEncodingException {
+       try {
+           String userToken = service.setTokensByEmail(email);
+           String resetPasswordLink = GetSiteURL.getSiteURL(request) + "/api/user/reset_password?token=" + userToken;
+           service.sendEmail(email, resetPasswordLink);
+           return new ResponseEntity<>("We have sent your token on email", HttpStatus.OK);
+       }catch (UserNotFoundException e){
+           return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+       } catch (MessagingException e){
+           return new ResponseEntity<>("something went wrong, please try again later", HttpStatus.BAD_REQUEST);
+       }
+       }
+
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPassDTO resetPassDTO) {
-        return new ResponseEntity<>(service.resetPassword(resetPassDTO.getToken(), resetPassDTO.getPassword()), HttpStatus.OK);
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPassDTO resetPassDTO) {
+        try {
+            return new ResponseEntity<>(service.resetPassword(resetPassDTO.getToken(), resetPassDTO.getPassword()), HttpStatus.OK);
+        }catch (UserNotFoundException e){
+            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+        }
     }
 }
 

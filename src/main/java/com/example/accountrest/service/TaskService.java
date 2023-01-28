@@ -28,7 +28,7 @@ public class TaskService {
     @Autowired
     private AccountConverter converter;
 
-    @SneakyThrows
+
     public TaskDTO createTask(TaskDTO taskDTO) {
         UserEntity user = findUserByAuth();
         TaskEntity task = new TaskEntity();
@@ -38,8 +38,7 @@ public class TaskService {
         return converter.convertToTaskDTO(Objects.requireNonNull(taskRepo.save(task)));
     }
 
-    @SneakyThrows
-    public ResponseTaskDTO showTasks(String username) {
+    public ResponseTaskDTO showTasks(String username) throws UserNotFoundException {
         UserEntity user = findUserByAuth();
         List<TaskEntity> UserList = taskRepo.getAllByUser(user);
         ResponseTaskDTO responseTaskDTO = new ResponseTaskDTO();
@@ -49,7 +48,7 @@ public class TaskService {
                     .map(converter::convertToTaskDTO)
                     .collect(Collectors.toList()));
         } else {
-            user = userRepo.findByUsername(username).orElseThrow(UserNotFoundException::new);
+                user = userRepo.findByUsername(username).orElseThrow(UserNotFoundException::new);
             List<TaskEntity> externalUserList = taskRepo.getAllByUser(user);
             List<TaskEntity> completedTasksList = externalUserList.stream().filter(TaskEntity::isCompleted).toList();
             responseTaskDTO.setUsername(user.getUsername());
@@ -58,20 +57,21 @@ public class TaskService {
         return responseTaskDTO;
     }
 
-    @SneakyThrows
-    public TaskDTO changeTaskStatus(Long id) {
+
+    public TaskDTO changeTaskStatus(Long id) throws TaskNotFoundException {
         TaskEntity task = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
         task.setCompleted(!task.isCompleted());
         return converter.convertToTaskDTO(task);
     }
 
-    public String delete(Long id) {
+    public String delete(Long id) throws TaskNotFoundException {
+        taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
         taskRepo.deleteById(id);
         return "Your task successfully deleted";
     }
 
     @SneakyThrows
-    private UserEntity findUserByAuth() {
+    private UserEntity findUserByAuth()  {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userRepo.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
     }

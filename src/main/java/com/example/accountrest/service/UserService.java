@@ -46,8 +46,8 @@ public class UserService {
         userRepo.save(user);
     }
 
-    @SneakyThrows
-    public String setTokensByEmail(String email) {
+
+    public String setTokensByEmail(String email) throws UserNotFoundException {
         UserEntity user = userRepo.findByEmail(email).orElseThrow(UserNotFoundException::new);
         user.setToken(generateToken());
         user.setTokenCreationDate(LocalDateTime.now());
@@ -55,8 +55,8 @@ public class UserService {
         return user.getToken();
     }
 
-    @SneakyThrows
-    public String resetPassword(String token, String password) {
+
+    public String resetPassword(String token, String password) throws UserNotFoundException {
         UserEntity user = (userRepo.findByToken(token).orElseThrow(UserNotFoundException::new));
         LocalDateTime tokenCreationDate = user.getTokenCreationDate();
         if (isTokenExpired(tokenCreationDate)) {

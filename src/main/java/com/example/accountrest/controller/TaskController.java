@@ -2,6 +2,8 @@ package com.example.accountrest.controller;
 
 import com.example.accountrest.dto.ResponseTaskDTO;
 import com.example.accountrest.dto.TaskDTO;
+import com.example.accountrest.exception.TaskNotFoundException;
+import com.example.accountrest.exception.UserNotFoundException;
 import com.example.accountrest.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,22 +20,36 @@ public class TaskController {
 
 
     @PostMapping("/add-task")
-    public ResponseEntity<TaskDTO> addNewTask(@RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<?> addNewTask(@RequestBody TaskDTO taskDTO) {
         return new ResponseEntity<>(service.createTask(taskDTO), HttpStatus.OK);
     }
 
-    @PutMapping("/show-tasks")
-    public ResponseEntity<ResponseTaskDTO> showTasks(@RequestParam String username) {
-        return new ResponseEntity<>(service.showTasks(username), HttpStatus.OK);
+    @GetMapping("/show-tasks")
+    public ResponseEntity<?> showTasks(@RequestParam String username) {
+        try {
+            ResponseTaskDTO response = service.showTasks(username);
+            return new ResponseEntity<>(response, HttpStatus.FOUND);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>("user not found", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/change-task-status")
-    public ResponseEntity<TaskDTO> changeTaskStatus(@RequestParam Long id) {
-        return new ResponseEntity<>(service.changeTaskStatus(id), HttpStatus.OK);
+    public ResponseEntity<?> changeTaskStatus(@RequestParam Long id) {
+        try {
+            TaskDTO response = service.changeTaskStatus(id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (TaskNotFoundException e) {
+            return new ResponseEntity<>("Task not found", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteTask(@RequestParam Long id) {
-        return new ResponseEntity<>(service.delete(id), HttpStatus.OK);
+    public ResponseEntity<?> deleteTask(@RequestParam Long id) {
+        try {
+            return new ResponseEntity<>(service.delete(id), HttpStatus.OK);
+        } catch (TaskNotFoundException e) {
+            return new ResponseEntity<>("Task not found", HttpStatus.BAD_REQUEST);
+        }
     }
 }
