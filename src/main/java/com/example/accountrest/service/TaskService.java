@@ -1,6 +1,8 @@
 package com.example.accountrest.service;
 
 import com.example.accountrest.accountinterface.AccountConverter;
+import com.example.accountrest.accountinterface.UserTask;
+import com.example.accountrest.dto.RequestTaskDTO;
 import com.example.accountrest.dto.ResponseTaskDTO;
 import com.example.accountrest.dto.TaskDTO;
 import com.example.accountrest.entity.TaskEntity;
@@ -9,7 +11,6 @@ import com.example.accountrest.exception.TaskNotFoundException;
 import com.example.accountrest.exception.UserNotFoundException;
 import com.example.accountrest.repository.TaskRepository;
 import com.example.accountrest.repository.UserRepository;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +21,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class TaskService {
+public class TaskService implements UserTask {
     @Autowired
     private UserRepository userRepo;
     @Autowired
@@ -28,16 +29,17 @@ public class TaskService {
     @Autowired
     private AccountConverter converter;
 
-
-    public TaskDTO createTask(TaskDTO taskDTO) {
+    @Override
+    public TaskDTO createTask(RequestTaskDTO requestTaskDTO) throws UserNotFoundException {
         UserEntity user = findUserByAuth();
         TaskEntity task = new TaskEntity();
-        task.setTask(taskDTO.getTitle());
-        task.setCompleted(taskDTO.isCompleted());
+        task.setTitle(requestTaskDTO.getTitle());
+        task.setCompleted(requestTaskDTO.isCompleted());
         task.setUser(user);
         return converter.convertToTaskDTO(Objects.requireNonNull(taskRepo.save(task)));
     }
 
+    @Override
     public ResponseTaskDTO showTasks(String username) throws UserNotFoundException {
         UserEntity user = findUserByAuth();
         List<TaskEntity> UserList = taskRepo.getAllByUser(user);
@@ -48,7 +50,7 @@ public class TaskService {
                     .map(converter::convertToTaskDTO)
                     .collect(Collectors.toList()));
         } else {
-                user = userRepo.findByUsername(username).orElseThrow(UserNotFoundException::new);
+            user = userRepo.findByUsername(username).orElseThrow(UserNotFoundException::new);
             List<TaskEntity> externalUserList = taskRepo.getAllByUser(user);
             List<TaskEntity> completedTasksList = externalUserList.stream().filter(TaskEntity::isCompleted).toList();
             responseTaskDTO.setUsername(user.getUsername());
@@ -58,20 +60,23 @@ public class TaskService {
     }
 
 
-    public TaskDTO changeTaskStatus(Long id) throws TaskNotFoundException {
-        TaskEntity task = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
-        task.setCompleted(!task.isCompleted());
-        return converter.convertToTaskDTO(task);
-    }
 
+    @Override
     public String delete(Long id) throws TaskNotFoundException {
         taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
         taskRepo.deleteById(id);
         return "Your task successfully deleted";
     }
 
-    @SneakyThrows
-    private UserEntity findUserByAuth()  {
+    @Override
+    public TaskDTO editTask(TaskDTO taskDTO) throws TaskNotFoundException {
+        TaskEntity task = taskRepo.findById(taskDTO.getId()).orElseThrow(TaskNotFoundException::new);
+        task.setTitle(taskDTO.getTitle());
+        task.setCompleted(taskDTO.isCompleted());
+        return converter.convertToTaskDTO(taskRepo.save(task));
+    }
+
+    private UserEntity findUserByAuth() throws UserNotFoundException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userRepo.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
     }

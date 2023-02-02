@@ -12,7 +12,7 @@ public class Converter implements AccountConverter {
     public TaskDTO convertToTaskDTO(TaskEntity entity) {
         TaskDTO taskDTO = new TaskDTO();
         taskDTO.setCompleted(entity.isCompleted());
-        taskDTO.setTitle(entity.getTask());
+        taskDTO.setTitle(entity.getTitle());
         taskDTO.setId(entity.getId());
         return taskDTO;
     }

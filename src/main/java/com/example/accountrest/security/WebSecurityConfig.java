@@ -46,9 +46,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests((authorize) ->
                 {
                     try {
-                        authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/**").permitAll()
-                                .requestMatchers(HttpMethod.PUT, "/api/**").permitAll()
+                        authorize
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyRole("USER", "ADMIN")
                                 .anyRequest().authenticated().and().httpBasic();

@@ -17,7 +17,7 @@ public class TaskEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;
-    private String task;
+    private String title;
     private boolean completed;
     @JsonIgnore
     @ManyToOne

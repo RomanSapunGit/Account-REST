@@ -9,5 +9,5 @@ import lombok.Setter;
 @Setter
 public class ResetPassDTO {
     private String password;
-    private String token;
+    private String matchPassword;
 }
