@@ -50,7 +50,7 @@ public class AuthService implements UserAuth {
         user.setUsername(signUpDto.getUsername());
         user.setEmail(signUpDto.getEmail());
         user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
-        RoleEntity roles = roleRepo.findByName("USER").orElseThrow(RoleNotFoundException::new);
+        RoleEntity roles = roleRepo.findByName("ROLE_USER").orElseThrow(RoleNotFoundException::new);
         user.setRoles(Collections.singleton(roles));
         userRepo.save(user);
     }

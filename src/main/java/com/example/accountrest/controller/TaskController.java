@@ -29,7 +29,7 @@ public class TaskController {
     }
 
     @GetMapping("/show-tasks")
-    public ResponseEntity<?> showTasks(@RequestBody String username) {
+    public ResponseEntity<?> showTasks(@RequestParam String username) {
         try {
             return new ResponseEntity<>(userTask.showTasks(username), HttpStatus.FOUND);
         } catch (UserNotFoundException e) {

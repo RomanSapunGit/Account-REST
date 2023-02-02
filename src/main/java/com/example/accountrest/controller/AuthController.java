@@ -53,7 +53,7 @@ public class AuthController {
         try {
             return new ResponseEntity<>(userAuth.sendEmail(email, request), HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User not found", HttpStatus.NO_CONTENT);
         } catch (MessagingException e) {
             return new ResponseEntity<>("something went wrong, please try again later", HttpStatus.BAD_REQUEST);
         }

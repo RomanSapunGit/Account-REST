@@ -34,7 +34,6 @@ public class WebSecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -48,7 +47,8 @@ public class WebSecurityConfig {
                     try {
                         authorize
                                 .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyRole("USER", "ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                                 .anyRequest().authenticated().and().httpBasic();
                     } catch (Exception e) {
                         throw new RuntimeException(e);
