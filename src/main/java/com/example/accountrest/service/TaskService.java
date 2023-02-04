@@ -44,9 +44,9 @@ public class TaskService implements UserTask {
         UserEntity user = findUserByAuth();
         List<TaskEntity> UserList = taskRepo.getAllByUser(user);
         ResponseTaskDTO responseTaskDTO = new ResponseTaskDTO();
-        if (user.getUsername().equals(username)) {
             responseTaskDTO.setUsername(user.getUsername());
-            responseTaskDTO.setTasksList(UserList.stream()
+            if (user.getUsername().equals(username)) {
+                responseTaskDTO.setTasksList(UserList.stream()
                     .map(converter::convertToTaskDTO)
                     .collect(Collectors.toList()));
         } else {
@@ -58,8 +58,6 @@ public class TaskService implements UserTask {
         }
         return responseTaskDTO;
     }
-
-
 
     @Override
     public String delete(Long id) throws TaskNotFoundException {

@@ -1,5 +1,6 @@
 package com.example.accountrest.controller;
 
+import com.example.accountrest.accountinterface.AccountUser;
 import com.example.accountrest.accountinterface.UserAuth;
 import com.example.accountrest.dto.ResetPassDTO;
 import com.example.accountrest.dto.SignInDTO;
@@ -20,11 +21,12 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private UserAuth userAuth;
+    @Autowired
+    private AccountUser accUser;
 
     @PostMapping("/sign-in")
     public ResponseEntity<String> authenticateUser(@RequestBody SignInDTO signInDTO) {
@@ -42,7 +44,7 @@ public class AuthController {
         try {
             userAuth.addNewUser(signUpDto);
             return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
-        }catch (RoleNotFoundException e){
+        } catch (RoleNotFoundException e) {
             return new ResponseEntity<>("Role not found", HttpStatus.NOT_FOUND);
         }
     }
@@ -66,6 +68,15 @@ public class AuthController {
             return new ResponseEntity<>(userAuth.resetPassword(token, resetPassDTO), HttpStatus.OK);
         } catch (UserNotFoundException e) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/user/change-data")
+    public ResponseEntity<?> changeUserData(@RequestBody SignUpDTO signUpDTO) {
+        try {
+            return new ResponseEntity<>(accUser.changeUserData(signUpDTO), HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>("User not found", HttpStatus.UNAUTHORIZED);
         }
     }
 }

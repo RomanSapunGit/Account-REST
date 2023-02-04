@@ -13,6 +13,7 @@ import com.example.accountrest.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -103,13 +104,15 @@ public class AuthService implements UserAuth {
         mailSender.send(message);
         return "We have sent your token on email";
     }
+
     @Override
-    public String signInUser(SignInDTO signInDTO){
+    public String signInUser(SignInDTO signInDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 signInDTO.getUsername(), signInDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return "User signed-in successfully!";
     }
+
 
     private String generateToken() {
         StringBuilder token = new StringBuilder();
@@ -131,4 +134,5 @@ public class AuthService implements UserAuth {
 
         return diff.toMinutes() >= EXPIRE_TOKEN_AFTER_MINUTES;
     }
+
 }
