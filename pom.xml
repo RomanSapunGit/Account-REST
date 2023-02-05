@@ -8,6 +8,7 @@
 		<version>3.0.1</version>
 		<relativePath/>
 	</parent>
+
 	<groupId>com.example</groupId>
 	<artifactId>accountRest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -67,12 +68,14 @@
 
 
 	<build>
+		<pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		</pluginManagement>
 	</build>
 
 </project>

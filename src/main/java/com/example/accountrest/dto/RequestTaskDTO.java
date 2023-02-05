@@ -1,5 +1,6 @@
 package com.example.accountrest.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RequestTaskDTO {
+    @NotNull
     private String title;
+    @NotNull
     private boolean completed;
 }

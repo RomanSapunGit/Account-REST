@@ -1,9 +1,11 @@
 package com.example.accountrest.service;
 
+import com.example.accountrest.accountinterface.AccountConverter;
 import com.example.accountrest.accountinterface.AccountUser;
-import com.example.accountrest.dto.SignUpDTO;
+import com.example.accountrest.dto.UpdateUserDTO;
 import com.example.accountrest.entity.UserEntity;
 import com.example.accountrest.exception.UserNotFoundException;
+import com.example.accountrest.exception.ValuesAreEqualException;
 import com.example.accountrest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,34 +19,20 @@ public class UserService implements AccountUser {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UserRepository userRepo;
+    @Autowired
+    AccountConverter accConv;
 
     @Override
-    public String changeUserData(SignUpDTO newUserData) throws UserNotFoundException {
+    public String updateUser(UpdateUserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
         UserEntity user = findUserByAuth();
-        if (newUserData.getName() != null && newUserData.getUsername() != null
-                && newUserData.getPassword() != null && newUserData.getEmail() != null) {
-            user.setName(newUserData.getName());
-            user.setUsername(newUserData.getUsername());
-            user.setPassword(passwordEncoder.encode(newUserData.getPassword()));
-            user.setEmail(newUserData.getEmail());
-            userRepo.save(user);
-        } else {
-            if (newUserData.getName() != null) {
-                user.setName(newUserData.getName());
-                userRepo.save(user);
-            } else if (newUserData.getUsername() != null) {
-                user.setUsername(newUserData.getUsername());
-                userRepo.save(user);
-            } else if (newUserData.getPassword() != null) {
-                user.setPassword(passwordEncoder.encode(newUserData.getPassword()));
-                userRepo.save(user);
-            } else if (newUserData.getEmail() != null) {
-                user.setEmail(newUserData.getEmail());
-                userRepo.save(user);
-            } else {
-                return "Nothing to change";
-            }
+        if(user.getUsername().equals(newUserData.getUsername()) && user.getEmail().equals(newUserData.getEmail())
+                && user.getName().equals(newUserData.getName())){
+            throw new ValuesAreEqualException();
         }
+        user.setName(newUserData.getName());
+        user.setUsername(newUserData.getUsername());
+        user.setEmail(newUserData.getEmail());
+            userRepo.save(user);
         return "User data changed";
     }
 

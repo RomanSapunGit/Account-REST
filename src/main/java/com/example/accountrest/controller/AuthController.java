@@ -5,8 +5,10 @@ import com.example.accountrest.accountinterface.UserAuth;
 import com.example.accountrest.dto.ResetPassDTO;
 import com.example.accountrest.dto.SignInDTO;
 import com.example.accountrest.dto.SignUpDTO;
+import com.example.accountrest.dto.UpdateUserDTO;
 import com.example.accountrest.exception.RoleNotFoundException;
 import com.example.accountrest.exception.UserNotFoundException;
+import com.example.accountrest.exception.ValuesAreEqualException;
 import com.example.accountrest.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,16 +69,20 @@ public class AuthController {
         try {
             return new ResponseEntity<>(userAuth.resetPassword(token, resetPassDTO), HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
         }
     }
 
     @PostMapping("/user/change-data")
-    public ResponseEntity<?> changeUserData(@RequestBody SignUpDTO signUpDTO) {
+    public ResponseEntity<?> changeUserData(@RequestBody UpdateUserDTO userDTO) {
         try {
-            return new ResponseEntity<>(accUser.changeUserData(signUpDTO), HttpStatus.OK);
+            return new ResponseEntity<>(accUser.updateUser(userDTO), HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>("User not found", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+        } catch (ValuesAreEqualException e) {
+            return new ResponseEntity<>("Values are equal", HttpStatus.BAD_REQUEST);
+        } catch (NullPointerException e) {
+            return new ResponseEntity<>("One or several parameters was missing", HttpStatus.BAD_REQUEST);
         }
     }
 }
