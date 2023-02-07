@@ -20,38 +20,22 @@ public class TaskController {
 
 
     @PostMapping("/add-task")
-    public ResponseEntity<?> addNewTask(@RequestBody RequestTaskDTO requestTaskDTO) {
-        try {
-            return new ResponseEntity<>(userTask.createTask(requestTaskDTO), HttpStatus.CREATED);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> addNewTask(@RequestBody RequestTaskDTO requestTaskDTO) throws UserNotFoundException {
+        return new ResponseEntity<>(userTask.createTask(requestTaskDTO), HttpStatus.CREATED);
     }
 
     @GetMapping("/show-tasks")
-    public ResponseEntity<?> showTasks(@RequestParam String username) {
-        try {
-            return new ResponseEntity<>(userTask.showTasks(username), HttpStatus.FOUND);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> showTasks(@RequestParam String username) throws UserNotFoundException {
+        return new ResponseEntity<>(userTask.showTasks(username), HttpStatus.FOUND);
     }
 
     @PostMapping("/edit-task")
-    public ResponseEntity<?> editTask(@RequestBody TaskDTO taskDTO) {
-        try {
-            return new ResponseEntity<>(userTask.editTask(taskDTO), HttpStatus.OK);
-        } catch (TaskNotFoundException e) {
-            return new ResponseEntity<>("Task not found", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> editTask(@RequestBody TaskDTO taskDTO) throws TaskNotFoundException {
+        return new ResponseEntity<>(userTask.editTask(taskDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteTask(@RequestParam Long id) {
-        try {
-            return new ResponseEntity<>(userTask.delete(id), HttpStatus.OK);
-        } catch (TaskNotFoundException e) {
-            return new ResponseEntity<>("Task not found", HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> deleteTask(@RequestParam Long id) throws TaskNotFoundException {
+        return new ResponseEntity<>(userTask.delete(id), HttpStatus.OK);
     }
 }

@@ -1,19 +1,20 @@
 package com.example.accountrest.dto;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 @Getter
 @Setter
-@Builder
+@NoArgsConstructor
 
-public class UpdateUserDTO {
-    @NotNull
+public class UserDTO {
+    @NotEmpty
     private String name;
-    @NotNull
+    @NotEmpty
     private String username;
-    @NotNull
+    @NotEmpty
     private String email;
 }

@@ -36,6 +36,7 @@ public class TaskService implements UserTask {
         task.setTitle(requestTaskDTO.getTitle());
         task.setCompleted(requestTaskDTO.isCompleted());
         task.setUser(user);
+
         return converter.convertToTaskDTO(Objects.requireNonNull(taskRepo.save(task)));
     }
 
@@ -60,10 +61,10 @@ public class TaskService implements UserTask {
     }
 
     @Override
-    public String delete(Long id) throws TaskNotFoundException {
-        taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
+    public TaskDTO delete(Long id) throws TaskNotFoundException {
+       TaskEntity deletedTask = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
         taskRepo.deleteById(id);
-        return "Your task successfully deleted";
+        return converter.convertToTaskDTO( deletedTask);
     }
 
     @Override

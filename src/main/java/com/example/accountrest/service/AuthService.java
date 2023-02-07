@@ -1,20 +1,21 @@
 package com.example.accountrest.service;
 
+import com.example.accountrest.accountinterface.AccountConverter;
 import com.example.accountrest.accountinterface.UserAuth;
 import com.example.accountrest.dto.ResetPassDTO;
 import com.example.accountrest.dto.SignInDTO;
 import com.example.accountrest.dto.SignUpDTO;
+import com.example.accountrest.dto.UserDTO;
 import com.example.accountrest.entity.RoleEntity;
 import com.example.accountrest.entity.UserEntity;
-import com.example.accountrest.exception.RoleNotFoundException;
-import com.example.accountrest.exception.UserNotFoundException;
+import com.example.accountrest.exception.*;
 import com.example.accountrest.repository.RoleRepository;
 import com.example.accountrest.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,18 +35,23 @@ import java.util.UUID;
 public class AuthService implements UserAuth {
     private static final long EXPIRE_TOKEN_AFTER_MINUTES = 30;
     @Autowired
+    private JavaMailSender mailSender;
+    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private RoleRepository roleRepo;
     @Autowired
     private UserRepository userRepo;
     @Autowired
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     @Autowired
-    private JavaMailSender mailSender;
+    private AccountConverter converter;
+    @Value("${mail.username}")
+    private String emailSupport;
+
 
     @Override
-    public void addNewUser(SignUpDTO signUpDto) throws RoleNotFoundException {
+    public UserDTO addNewUser(SignUpDTO signUpDto) throws RoleNotFoundException {
         UserEntity user = new UserEntity();
         user.setName(signUpDto.getName());
         user.setUsername(signUpDto.getUsername());
@@ -54,6 +60,7 @@ public class AuthService implements UserAuth {
         RoleEntity roles = roleRepo.findByName("ROLE_USER").orElseThrow(RoleNotFoundException::new);
         user.setRoles(Collections.singleton(roles));
         userRepo.save(user);
+        return converter.convertToUserDTO(user);
     }
 
     @Override
@@ -66,30 +73,31 @@ public class AuthService implements UserAuth {
     }
 
     @Override
-    public String resetPassword(String token, ResetPassDTO resetPassDTO) throws UserNotFoundException {
+    public ResetPassDTO resetPassword(String token, ResetPassDTO resetPassDTO) throws UserNotFoundException,
+                                                                                 ValuesAreNotEqualException, TokenExpiredException {
         if (resetPassDTO.getPassword().equals(resetPassDTO.getMatchPassword())) {
-            return "passwords don't match";
+           throw new ValuesAreNotEqualException();
         }
         UserEntity user = (userRepo.findByToken(token).orElseThrow(UserNotFoundException::new));
         LocalDateTime tokenCreationDate = user.getTokenCreationDate();
         if (isTokenExpired(tokenCreationDate)) {
-            return "Token expired.";
+            throw new TokenExpiredException();
         }
         user.setPassword(passwordEncoder.encode(resetPassDTO.getPassword()));
         user.setToken(null);
         user.setTokenCreationDate(null);
         userRepo.save(user);
-        return "Your password successfully updated";
+        return resetPassDTO;
     }
 
     @Override
-    public String sendEmail(String email, HttpServletRequest request)
+    public void sendEmail(String email, HttpServletRequest request)
             throws MessagingException, UnsupportedEncodingException, UserNotFoundException {
         String userToken = setTokensByEmail(email);
         String link = GetSiteURL.getSiteURL(request) + "/api/auth/reset-password?token=" + userToken;
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom("Brelok002@gmail.com", "Support");
+        helper.setFrom(emailSupport, "Support");
         helper.setTo(email);
         String subject = "Here's the link to reset your password";
         String content = "<p>Hello,</p>"
@@ -102,15 +110,14 @@ public class AuthService implements UserAuth {
         helper.setSubject(subject);
         helper.setText(content, true);
         mailSender.send(message);
-        return "We have sent your token on email";
     }
 
     @Override
-    public String signInUser(SignInDTO signInDTO) {
+    public SignInDTO signInUser(SignInDTO signInDTO) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 signInDTO.getUsername(), signInDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return "User signed-in successfully!";
+        return signInDTO;
     }
 
 

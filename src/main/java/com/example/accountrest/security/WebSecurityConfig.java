@@ -47,6 +47,8 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyAuthority( "ROLE_ADMIN", "ROLE_USER" )
                                 .anyRequest().authenticated().and().httpBasic();
                     } catch (Exception e) {
                         throw new RuntimeException(e);

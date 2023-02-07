@@ -1,41 +1,7 @@
-#--------------------- DB Connection ------------------
-spring:
-  datasource:
-    url:  ${spring.db.url}
-    username: ${spring.db.username}
-    password: ${spring.db.password}
 
-  #--------------------JPA-ORM Properties-----------------
-
-  jpa :
-    show-sql : true
-    hibernate :
-      ddl-auto: update
-    properties :
-      hibernate :
-        dialect : org.hibernate.dialect.PostgreSQLDialect
-        format_sql : true
-  h2:
-    console:
-      enabled: true
-#--------------------Mail send-----------------
-  mail:
-    host: smtp.gmail.com
-    username: ${spring.mail.username}
-    password: ${spring.mail.password}
-    port:  ${spring.mail.port}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-  aop:
-    auto:
-    #--------------------Logging-----------------
-logging :
-  level :
-    org:
-    springframework :
-      web : TRACE
-      hibernate : ERROR
+postgres:
+  username: postgresUser
+  password: 555908767
+mail:
+  username: Brelok002@gmail.com
+  password: egbeihsmnfpktrwu

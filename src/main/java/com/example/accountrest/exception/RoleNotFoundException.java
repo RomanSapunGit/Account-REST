@@ -5,4 +5,5 @@ public class RoleNotFoundException extends Exception{
     public RoleNotFoundException() {
         super(DEFAULT_MESSAGE);
     }
+
 }

@@ -12,7 +12,7 @@ public interface UserTask {
 
     ResponseTaskDTO showTasks(String username) throws UserNotFoundException;
 
-    String delete(Long id) throws TaskNotFoundException;
+    TaskDTO delete(Long id) throws TaskNotFoundException;
 
     TaskDTO editTask(TaskDTO taskDTO) throws TaskNotFoundException;
 }

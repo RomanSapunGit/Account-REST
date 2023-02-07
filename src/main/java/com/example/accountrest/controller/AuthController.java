@@ -5,10 +5,8 @@ import com.example.accountrest.accountinterface.UserAuth;
 import com.example.accountrest.dto.ResetPassDTO;
 import com.example.accountrest.dto.SignInDTO;
 import com.example.accountrest.dto.SignUpDTO;
-import com.example.accountrest.dto.UpdateUserDTO;
-import com.example.accountrest.exception.RoleNotFoundException;
-import com.example.accountrest.exception.UserNotFoundException;
-import com.example.accountrest.exception.ValuesAreEqualException;
+import com.example.accountrest.dto.UserDTO;
+import com.example.accountrest.exception.*;
 import com.example.accountrest.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    private static final String IS_TAKEN_MESSAGE = "is already taken!";
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -31,59 +30,38 @@ public class AuthController {
     private AccountUser accUser;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<String> authenticateUser(@RequestBody SignInDTO signInDTO) {
+    public ResponseEntity<?> authenticateUser(@RequestBody SignInDTO signInDTO) {
         return new ResponseEntity<>(userAuth.signInUser(signInDTO), HttpStatus.OK);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDto) {
+    public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDto) throws RoleNotFoundException {
         if (userRepository.existsByUsername(signUpDto.getUsername())) {
-            return new ResponseEntity<>("Username is already taken!", HttpStatus.FOUND);
+            return new ResponseEntity<>( signUpDto.getUsername() + IS_TAKEN_MESSAGE, HttpStatus.CONFLICT);
         }
         if (userRepository.existsByEmail(signUpDto.getEmail())) {
-            return new ResponseEntity<>("Email is already taken!", HttpStatus.FOUND);
+            return new ResponseEntity<>(signUpDto.getEmail() + IS_TAKEN_MESSAGE, HttpStatus.CONFLICT);
         }
-        try {
-            userAuth.addNewUser(signUpDto);
-            return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
-        } catch (RoleNotFoundException e) {
-            return new ResponseEntity<>("Role not found", HttpStatus.NOT_FOUND);
-        }
+            return new ResponseEntity<>(userAuth.addNewUser(signUpDto), HttpStatus.OK);
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email,
-                                                 HttpServletRequest request) throws UnsupportedEncodingException {
-        try {
-            return new ResponseEntity<>(userAuth.sendEmail(email, request), HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>("User not found", HttpStatus.NO_CONTENT);
-        } catch (MessagingException e) {
-            return new ResponseEntity<>("something went wrong, please try again later", HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<String> forgotPassword(@RequestParam String email, HttpServletRequest request)
+                                                 throws UnsupportedEncodingException, UserNotFoundException, MessagingException {
+            userAuth.sendEmail(email, request);
+            return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPassDTO resetPassDTO) {
-        try {
+    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPassDTO resetPassDTO)
+                                          throws UserNotFoundException, TokenExpiredException, ValuesAreNotEqualException {
             return new ResponseEntity<>(userAuth.resetPassword(token, resetPassDTO), HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
-        }
     }
 
     @PostMapping("/user/change-data")
-    public ResponseEntity<?> changeUserData(@RequestBody UpdateUserDTO userDTO) {
-        try {
+    public ResponseEntity<?> changeUserData(@RequestBody UserDTO userDTO) throws UserNotFoundException, ValuesAreEqualException {
             return new ResponseEntity<>(accUser.updateUser(userDTO), HttpStatus.OK);
-        } catch (UserNotFoundException e) {
-            return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
-        } catch (ValuesAreEqualException e) {
-            return new ResponseEntity<>("Values are equal", HttpStatus.BAD_REQUEST);
-        } catch (NullPointerException e) {
-            return new ResponseEntity<>("One or several parameters was missing", HttpStatus.BAD_REQUEST);
-        }
     }
 }
 

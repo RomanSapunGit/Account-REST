@@ -1,5 +1,6 @@
 package com.example.accountrest.security;
 
+
 import com.example.accountrest.entity.UserEntity;
 import com.example.accountrest.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
+
 
     public UserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
