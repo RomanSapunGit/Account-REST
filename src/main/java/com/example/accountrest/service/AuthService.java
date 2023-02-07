@@ -46,7 +46,7 @@ public class AuthService implements UserAuth {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private AccountConverter converter;
-    @Value("${mail.username}")
+    @Value("Brelok002@gmail.com")
     private String emailSupport;
 
 

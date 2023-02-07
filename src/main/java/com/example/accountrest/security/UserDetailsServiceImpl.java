@@ -2,7 +2,9 @@ package com.example.accountrest.security;
 
 
 import com.example.accountrest.entity.UserEntity;
+import com.example.accountrest.exception.AuthProhibitedException;
 import com.example.accountrest.repository.UserRepository;
+import lombok.SneakyThrows;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,11 +24,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         UserEntity user = userRepository.findByUsername(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found with username: " + username));
+        Set<GrantedAuthority> authoritiesCheck = user.getRoles().stream().filter(role -> "ROLE_DISABLE".equals(role.getName()))
+                .map(roleEntity -> new SimpleGrantedAuthority(roleEntity.getName())).collect(Collectors.toSet());
+        if(!authoritiesCheck.isEmpty()){
+                throw new AuthProhibitedException();
+        }
         Set<GrantedAuthority> authorities = user
                 .getRoles()
                 .stream()

@@ -1,6 +1,2 @@
-spring:
-  profiles:
-    active: application-dev.yaml
-
-
-
+postgres:
+ username:

@@ -11,7 +11,6 @@ public interface AccountUser {
 
     String updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException;
 
-    ResponseAuthorityDTO addUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException;
+    ResponseAuthorityDTO changeUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException;
 
-    ResponseAuthorityDTO deleteUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException;
 }

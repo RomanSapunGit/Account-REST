@@ -10,5 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ChangeUserRoleDTO {
     private String username;
+    private String action;
     private String role;
 }

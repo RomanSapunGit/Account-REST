@@ -49,21 +49,15 @@ public class UserService implements AccountUser {
     }
 
     @Override
-    public ResponseAuthorityDTO addUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
+    public ResponseAuthorityDTO changeUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
         UserEntity user = userRepo.findByUsername(changeUserRoleDTO.getUsername()).orElseThrow(UserNotFoundException::new);
         RoleEntity role = roleRepo.findByName(changeUserRoleDTO.getRole()).orElseThrow(RoleNotFoundException::new);
         Set<RoleEntity> userRoles = user.getRoles();
-        userRoles.add(role);
-        user.setRoles(userRoles);
-        userRepo.save(user);
-        return converter.convertToResponseAuthorityDTO(user);
-    }
-    @Override
-    public ResponseAuthorityDTO deleteUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
-        UserEntity user = userRepo.findByUsername(changeUserRoleDTO.getUsername()).orElseThrow(UserNotFoundException::new);
-        RoleEntity role = roleRepo.findByName(changeUserRoleDTO.getRole()).orElseThrow(RoleNotFoundException::new);
-        Set<RoleEntity> userRoles = user.getRoles();
-        userRoles.remove(role);
+            if(changeUserRoleDTO.getAction().equals("add")) {
+                userRoles.add(role);
+            } else {
+                userRoles.remove(role);
+            }
         user.setRoles(userRoles);
         userRepo.save(user);
         return converter.convertToResponseAuthorityDTO(user);

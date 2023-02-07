@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -45,9 +46,9 @@ public class TaskService implements UserTask {
         UserEntity user = findUserByAuth();
         List<TaskEntity> UserList = taskRepo.getAllByUser(user);
         ResponseTaskDTO responseTaskDTO = new ResponseTaskDTO();
-            responseTaskDTO.setUsername(user.getUsername());
-            if (user.getUsername().equals(username)) {
-                responseTaskDTO.setTasksList(UserList.stream()
+        responseTaskDTO.setUsername(user.getUsername());
+        if (user.getUsername().equals(username)) {
+            responseTaskDTO.setTasksList(UserList.stream()
                     .map(converter::convertToTaskDTO)
                     .collect(Collectors.toList()));
         } else {
@@ -62,14 +63,25 @@ public class TaskService implements UserTask {
 
     @Override
     public TaskDTO delete(Long id) throws TaskNotFoundException {
-       TaskEntity deletedTask = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
+        TaskEntity deletedTask = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
         taskRepo.deleteById(id);
-        return converter.convertToTaskDTO( deletedTask);
+        return converter.convertToTaskDTO(deletedTask);
     }
 
     @Override
-    public TaskDTO editTask(TaskDTO taskDTO) throws TaskNotFoundException {
-        TaskEntity task = taskRepo.findById(taskDTO.getId()).orElseThrow(TaskNotFoundException::new);
+    public List<TaskDTO> updateTask(List<TaskDTO> updatedTasksDTO) {
+        int i =0;
+        while (i< updatedTasksDTO.size()){
+            TaskDTO task = updatedTasksDTO.get(i);
+        updatedTasksDTO = updatedTasksDTO.stream().map(taskDTO -> saveEditedTask(task)).collect(Collectors.toList());
+            i++;
+        }
+        return updatedTasksDTO;
+    }
+
+
+    private TaskDTO saveEditedTask(TaskDTO taskDTO) {
+        TaskEntity task = taskRepo.findById(taskDTO.getId()).orElseThrow();
         task.setTitle(taskDTO.getTitle());
         task.setCompleted(taskDTO.isCompleted());
         return converter.convertToTaskDTO(taskRepo.save(task));

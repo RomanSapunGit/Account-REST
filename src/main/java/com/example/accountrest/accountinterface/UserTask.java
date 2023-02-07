@@ -6,6 +6,8 @@ import com.example.accountrest.dto.TaskDTO;
 import com.example.accountrest.exception.TaskNotFoundException;
 import com.example.accountrest.exception.UserNotFoundException;
 
+import java.util.List;
+
 public interface UserTask {
 
     TaskDTO createTask(RequestTaskDTO requestTaskDTO) throws UserNotFoundException;
@@ -14,5 +16,5 @@ public interface UserTask {
 
     TaskDTO delete(Long id) throws TaskNotFoundException;
 
-    TaskDTO editTask(TaskDTO taskDTO) throws TaskNotFoundException;
+    List<TaskDTO> updateTask(List<TaskDTO> updatedTasksDTO);
 }

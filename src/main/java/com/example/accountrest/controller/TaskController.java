@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -29,9 +31,9 @@ public class TaskController {
         return new ResponseEntity<>(userTask.showTasks(username), HttpStatus.FOUND);
     }
 
-    @PostMapping("/edit-task")
-    public ResponseEntity<?> editTask(@RequestBody TaskDTO taskDTO) throws TaskNotFoundException {
-        return new ResponseEntity<>(userTask.editTask(taskDTO), HttpStatus.OK);
+    @PostMapping("/update-task")
+    public ResponseEntity<?> updateTask(@RequestBody List<TaskDTO> taskDTO) {
+        return new ResponseEntity<>(userTask.updateTask(taskDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")

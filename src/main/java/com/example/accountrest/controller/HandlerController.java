@@ -8,12 +8,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.UnsupportedEncodingException;
+import java.util.EmptyStackException;
 
 @RestControllerAdvice
 public class HandlerController {
     private static final String MISSED_PARAMETERS_MESSAGE = "One or several parameters was missing";
     @ExceptionHandler(value = {UserNotFoundException.class, TaskNotFoundException.class,
-            RoleNotFoundException.class, MessagingException.class, ValuesAreEqualException.class,
+            RoleNotFoundException.class, MessagingException.class, ValuesAreEqualException.class, EmptyStackException.class,
             ValuesAreNotEqualException.class, UnsupportedEncodingException.class, TokenExpiredException.class})
     protected ResponseEntity<?> handleConflict(Exception exception ){
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);

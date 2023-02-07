@@ -19,6 +19,6 @@ public class UserController {
     private AccountUser accountUser;
     @PostMapping("/change-authority")
     public ResponseEntity<?> changeUserAuthority(@RequestBody ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
-       return new ResponseEntity<>(accountUser.deleteUserAuthority(changeUserRoleDTO), HttpStatus.OK);
+       return new ResponseEntity<>(accountUser.changeUserAuthority(changeUserRoleDTO), HttpStatus.OK);
     }
 }

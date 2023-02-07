@@ -14,4 +14,5 @@ public interface AccountConverter {
     UserDTO convertToUserDTO(UserEntity entity);
 
     ResponseAuthorityDTO convertToResponseAuthorityDTO(UserEntity entity);
+
 }

@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class Converter implements AccountConverter {
     @Autowired
     private PasswordEncoder encoder;
+
     @Override
     public TaskDTO convertToTaskDTO(TaskEntity entity) {
         TaskDTO taskDTO = new TaskDTO();
