@@ -21,7 +21,7 @@ public class HandlerController {
     }
 
 @ExceptionHandler(value = {NullPointerException.class})
-    protected ResponseEntity<?> handleNullPointerWithCustomMessage(NullPointerException exception){
+    protected ResponseEntity<?> handleNullPointerWithCustomMessage(){
         return new ResponseEntity<>(MISSED_PARAMETERS_MESSAGE, HttpStatus.BAD_REQUEST);
 }
 }

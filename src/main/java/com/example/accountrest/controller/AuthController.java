@@ -5,7 +5,6 @@ import com.example.accountrest.accountinterface.UserAuth;
 import com.example.accountrest.dto.ResetPassDTO;
 import com.example.accountrest.dto.SignInDTO;
 import com.example.accountrest.dto.SignUpDTO;
-import com.example.accountrest.dto.UserDTO;
 import com.example.accountrest.exception.*;
 import com.example.accountrest.repository.UserRepository;
 import jakarta.mail.MessagingException;
@@ -57,11 +56,6 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPassDTO resetPassDTO)
                                           throws UserNotFoundException, TokenExpiredException, ValuesAreNotEqualException {
             return new ResponseEntity<>(userAuth.resetPassword(token, resetPassDTO), HttpStatus.OK);
-    }
-
-    @PostMapping("/user/change-data")
-    public ResponseEntity<?> changeUserData(@RequestBody UserDTO userDTO) throws UserNotFoundException, ValuesAreEqualException {
-            return new ResponseEntity<>(accUser.updateUser(userDTO), HttpStatus.OK);
     }
 }
 

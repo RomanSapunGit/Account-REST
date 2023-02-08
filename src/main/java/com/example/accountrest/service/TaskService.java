@@ -54,9 +54,12 @@ public class TaskService implements UserTask {
         } else {
             user = userRepo.findByUsername(username).orElseThrow(UserNotFoundException::new);
             List<TaskEntity> externalUserList = taskRepo.getAllByUser(user);
-            List<TaskEntity> completedTasksList = externalUserList.stream().filter(TaskEntity::isCompleted).toList();
             responseTaskDTO.setUsername(user.getUsername());
-            responseTaskDTO.setTasksList(completedTasksList.stream().map(converter::convertToTaskDTO).collect(Collectors.toList()));
+            responseTaskDTO.setTasksList(externalUserList
+                    .stream()
+                    .filter(TaskEntity::isCompleted)
+                    .map(converter::convertToTaskDTO)
+                    .collect(Collectors.toList()));
         }
         return responseTaskDTO;
     }
@@ -70,17 +73,51 @@ public class TaskService implements UserTask {
 
     @Override
     public List<TaskDTO> updateTask(List<TaskDTO> updatedTasksDTO) {
-        int i =0;
-        while (i< updatedTasksDTO.size()){
-            TaskDTO task = updatedTasksDTO.get(i);
-        updatedTasksDTO = updatedTasksDTO.stream().map(taskDTO -> saveEditedTask(task)).collect(Collectors.toList());
-            i++;
-        }
-        return updatedTasksDTO;
+        return updatedTasksDTO.stream().map(this::updateTask).collect(Collectors.toList());
     }
 
+    @Override
+    public TaskDTO searchTaskById(Long id) throws UserNotFoundException, TaskNotFoundException {
+        UserEntity userAuth = findUserByAuth();
+        TaskEntity searchedTask = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
+        List<TaskDTO> taskList = userAuth.getTask()
+                .stream()
+                .filter(searchedTask::equals)
+                .map(converter::convertToTaskDTO)
+                .toList();
+        if (taskList.isEmpty()) {
+            if (searchedTask.isCompleted()) {
+                return converter.convertToTaskDTO(searchedTask);
+            }
+        }
+        return taskList.get(0);
+    }
 
-    private TaskDTO saveEditedTask(TaskDTO taskDTO) {
+    @Override
+    public ResponseTaskDTO searchTasks( String searchTitle) throws UserNotFoundException, TaskNotFoundException {
+        UserEntity userAuth = findUserByAuth();
+        ResponseTaskDTO responseTaskDTO = new ResponseTaskDTO();
+        List<TaskEntity> taskEntities;
+            responseTaskDTO.setTasksList(userAuth.getTask()
+                    .stream()
+                    .filter(task -> task.getTitle().startsWith(searchTitle))
+                    .map(converter::convertToTaskDTO)
+                    .collect(Collectors.toList()));
+            if(responseTaskDTO.getTasksList().isEmpty()){
+                taskEntities = taskRepo.getAllByCompleted(true);
+            responseTaskDTO.setTasksList(taskEntities
+                    .stream()
+                    .filter(task -> task.getTitle().startsWith(searchTitle))
+                    .map(converter::convertToTaskDTO)
+                    .collect(Collectors.toList()));
+        }
+            UserEntity user = userRepo.getByTask
+                    (converter.convertToTaskEntity(responseTaskDTO.getTasksList().get(0))).orElseThrow(UserNotFoundException::new);
+        responseTaskDTO.setUsername(user.getUsername());
+        return responseTaskDTO;
+    }
+
+    private TaskDTO updateTask(TaskDTO taskDTO) {
         TaskEntity task = taskRepo.findById(taskDTO.getId()).orElseThrow();
         task.setTitle(taskDTO.getTitle());
         task.setCompleted(taskDTO.isCompleted());

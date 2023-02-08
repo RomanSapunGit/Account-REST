@@ -2,7 +2,6 @@ package com.example.accountrest.security;
 
 
 import com.example.accountrest.entity.UserEntity;
-import com.example.accountrest.exception.AuthProhibitedException;
 import com.example.accountrest.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,7 +32,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Set<GrantedAuthority> authoritiesCheck = user.getRoles().stream().filter(role -> "ROLE_DISABLE".equals(role.getName()))
                 .map(roleEntity -> new SimpleGrantedAuthority(roleEntity.getName())).collect(Collectors.toSet());
         if(!authoritiesCheck.isEmpty()){
-                throw new AuthProhibitedException();
+            return new org.springframework.security.core.userdetails.User(user.getUsername(),
+                    user.getPassword(), authoritiesCheck);
         }
         Set<GrantedAuthority> authorities = user
                 .getRoles()

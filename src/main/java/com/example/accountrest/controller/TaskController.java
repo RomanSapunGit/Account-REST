@@ -31,6 +31,16 @@ public class TaskController {
         return new ResponseEntity<>(userTask.showTasks(username), HttpStatus.FOUND);
     }
 
+    @GetMapping("/find-task")
+    public ResponseEntity<?> findTaskById(@RequestParam Long id) throws UserNotFoundException, TaskNotFoundException {
+        return new ResponseEntity<>(userTask.searchTaskById(id), HttpStatus.FOUND);
+    }
+
+    @GetMapping("/search-tasks")
+    public ResponseEntity<?> searchTasks(@RequestParam String title) throws UserNotFoundException, TaskNotFoundException {
+        return new ResponseEntity<>(userTask.searchTasks( title), HttpStatus.FOUND);
+    }
+
     @PostMapping("/update-task")
     public ResponseEntity<?> updateTask(@RequestBody List<TaskDTO> taskDTO) {
         return new ResponseEntity<>(userTask.updateTask(taskDTO), HttpStatus.OK);
