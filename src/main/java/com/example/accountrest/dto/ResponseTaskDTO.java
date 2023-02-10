@@ -13,4 +13,12 @@ public class ResponseTaskDTO {
     private String username;
     List<TaskDTO> tasksList;
 
+    public ResponseTaskDTO(String username, List<TaskDTO> tasksList) {
+        this.username = username;
+        this.tasksList = tasksList;
+    }
+
+    public ResponseTaskDTO() {
+
+    }
 }

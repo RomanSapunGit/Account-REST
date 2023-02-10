@@ -17,8 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,27 +93,39 @@ public class TaskService implements UserTask {
     }
 
     @Override
-    public ResponseTaskDTO searchTasks( String searchTitle) throws UserNotFoundException, TaskNotFoundException {
+    public List<ResponseTaskDTO> searchTasks(String searchTitle) throws UserNotFoundException {
         UserEntity userAuth = findUserByAuth();
-        ResponseTaskDTO responseTaskDTO = new ResponseTaskDTO();
-        List<TaskEntity> taskEntities;
-            responseTaskDTO.setTasksList(userAuth.getTask()
-                    .stream()
-                    .filter(task -> task.getTitle().startsWith(searchTitle))
-                    .map(converter::convertToTaskDTO)
-                    .collect(Collectors.toList()));
-            if(responseTaskDTO.getTasksList().isEmpty()){
-                taskEntities = taskRepo.getAllByCompleted(true);
-            responseTaskDTO.setTasksList(taskEntities
-                    .stream()
-                    .filter(task -> task.getTitle().startsWith(searchTitle))
-                    .map(converter::convertToTaskDTO)
-                    .collect(Collectors.toList()));
+        List<TaskEntity> list;
+        list = (userAuth.getTask()
+                .stream()
+                .filter(task -> task.getTitle().startsWith(searchTitle))
+                .toList());
+        if (!list.isEmpty()) {
+            return putValuesInList(list);
         }
-            UserEntity user = userRepo.getByTask
-                    (converter.convertToTaskEntity(responseTaskDTO.getTasksList().get(0))).orElseThrow(UserNotFoundException::new);
-        responseTaskDTO.setUsername(user.getUsername());
-        return responseTaskDTO;
+        List<TaskEntity> taskEntities = taskRepo.getAllByCompleted(true);
+        List<TaskEntity> newList = taskEntities
+                .stream()
+                .filter(task -> task.getTitle().startsWith(searchTitle))
+                .toList();
+        return putValuesInList(newList);
+    }
+
+    private List<ResponseTaskDTO> putValuesInList(List<TaskEntity> list) {
+        HashSet<List<TaskEntity>> sortedSet = new HashSet<>();
+        List<List<TaskEntity>> listOfTaskEntities = new ArrayList<>(list.stream()
+                .map(userRepo::getByTask)
+                .map(user -> list.stream()
+                        .map(task -> taskRepo.getTaskEntityByUserAndId(user, task.getId())).filter(Objects::nonNull).toList())
+                .toList());
+        listOfTaskEntities.removeIf(taskList -> !sortedSet.add(taskList));
+        List<List<ResponseTaskDTO>> newList = new ArrayList<>(list.stream()
+                .map(userRepo::getByTask)
+                .distinct()
+                .map(user -> listOfTaskEntities.stream().map(converter::convertToListDTO).map
+                        (taskDTOS -> new ResponseTaskDTO(user.getUsername(), taskDTOS)).collect(Collectors.toList()))
+                .toList());
+        return newList.stream().findFirst().orElseThrow();
     }
 
     private TaskDTO updateTask(TaskDTO taskDTO) {

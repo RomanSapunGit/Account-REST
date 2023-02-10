@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
     @NotNull Optional<TaskEntity> findById(@NotNull Long id);
+    TaskEntity getTaskEntityByUserAndId(UserEntity user, Long id);
     List<TaskEntity> getAllByUser(UserEntity user);
     List<TaskEntity> getAllByCompleted(Boolean completed);
 

@@ -6,16 +6,18 @@ import com.example.accountrest.dto.TaskDTO;
 import com.example.accountrest.dto.UserDTO;
 import com.example.accountrest.entity.TaskEntity;
 import com.example.accountrest.entity.UserEntity;
-import com.example.accountrest.exception.TaskNotFoundException;
+
+import java.util.List;
 
 
 public interface AccountConverter {
     TaskDTO convertToTaskDTO(TaskEntity entity);
 
-    TaskEntity convertToTaskEntity(TaskDTO dto) throws TaskNotFoundException;
+    TaskEntity convertToTaskEntity(TaskDTO dto);
 
     UserDTO convertToUserDTO(UserEntity entity);
 
     ResponseAuthorityDTO convertToResponseAuthorityDTO(UserEntity entity);
 
+    List<TaskDTO> convertToListDTO(List<TaskEntity> list);
 }

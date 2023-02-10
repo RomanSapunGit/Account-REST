@@ -20,6 +20,5 @@ public interface UserTask {
 
     TaskDTO searchTaskById(Long id) throws UserNotFoundException, TaskNotFoundException;
 
-
-    ResponseTaskDTO searchTasks(String searchTitle) throws UserNotFoundException, TaskNotFoundException;
+    List<ResponseTaskDTO> searchTasks(String searchTitle) throws UserNotFoundException, TaskNotFoundException;
 }
