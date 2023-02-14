@@ -18,7 +18,7 @@ import java.util.Set;
         @UniqueConstraint(columnNames = {"email"})
 })
 public class UserEntity {
-    @jakarta.persistence.Id
+    @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false, unique = true)
     private Long id;

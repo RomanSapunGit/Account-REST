@@ -7,7 +7,7 @@ import com.myproject.accountrest.exception.RoleNotFoundException;
 import com.myproject.accountrest.exception.UserNotFoundException;
 import com.myproject.accountrest.exception.ValuesAreEqualException;
 
-public interface AccountUser {
+public interface User {
 
     String updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException;
 

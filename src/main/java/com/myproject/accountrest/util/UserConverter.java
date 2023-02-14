@@ -1,43 +1,36 @@
 package com.myproject.accountrest.util;
 
-import com.myproject.accountrest.accountinterface.AccountConverter;
 import com.myproject.accountrest.dto.ResponseUserRoleDTO;
-import com.myproject.accountrest.dto.TaskDTO;
+import com.myproject.accountrest.dto.SignUpDTO;
 import com.myproject.accountrest.dto.UserDTO;
 import com.myproject.accountrest.entity.RoleEntity;
-import com.myproject.accountrest.entity.TaskEntity;
 import com.myproject.accountrest.entity.UserEntity;
-import com.myproject.accountrest.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
-import java.util.List;
 
 @Component
-public class Converter implements AccountConverter {
+public class UserConverter implements com.myproject.accountrest.accountinterface.UserConverter {
     @Autowired
-    private PasswordEncoder encoder;
-    @Autowired
-    private TaskRepository taskRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Override
-    public TaskDTO convertToTaskDTO(TaskEntity entity) {
-        TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setCompleted(entity.isCompleted());
-        taskDTO.setTitle(entity.getTitle());
-        taskDTO.setId(entity.getId());
-        return taskDTO;
-    }
-
-    @Override
-    public UserDTO convertToUserDTO(UserEntity entity) {
-        UserDTO userDTO = new UserDTO();
+    public UserDTO convertToUserDTO(UserEntity entity, UserDTO userDTO) {
         userDTO.setName(entity.getName());
         userDTO.setUsername(entity.getUsername());
         userDTO.setEmail(entity.getEmail());
         return userDTO;
+    }
+
+    @Override
+    public UserEntity convertToUserEntity(SignUpDTO signUpDTO, UserEntity entity) {
+        entity.setName(entity.getName());
+        entity.setUsername(entity.getUsername());
+        entity.setEmail(entity.getEmail());
+        entity.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
+        return entity;
     }
 
     @Override
@@ -49,10 +42,4 @@ public class Converter implements AccountConverter {
         return response;
     }
 
-    @Override
-    public List<TaskDTO> convertToListDTO(List<TaskEntity> list) {
-        List<TaskDTO> convertList;
-       convertList = list.stream().map(this::convertToTaskDTO).collect(Collectors.toList());
-       return convertList;
-    }
 }

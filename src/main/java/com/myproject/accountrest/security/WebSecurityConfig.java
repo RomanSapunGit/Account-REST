@@ -48,7 +48,8 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/api/users/**").hasAnyAuthority( "ROLE_ADMIN", "ROLE_USER" )
+                                .requestMatchers(HttpMethod.POST, "/api/users/change-data").hasAnyAuthority( "ROLE_ADMIN", "ROLE_USER" )
+                                .requestMatchers(HttpMethod.POST, "/api/users/**").hasAuthority( "ROLE_ADMIN" )
                                 .anyRequest().authenticated().and().httpBasic();
                     } catch (Exception e) {
                         throw new RuntimeException(e);

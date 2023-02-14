@@ -12,10 +12,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
 
     Optional<UserEntity> findByUsername(String username);
-
+    UserEntity getUserByTask(UserEntity user);
     Optional<UserEntity> findByToken(String token);
     UserEntity getByTask(TaskEntity task);
-
 
 }
 

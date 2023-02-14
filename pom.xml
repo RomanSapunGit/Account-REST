@@ -9,11 +9,11 @@
 		<relativePath/>
 	</parent>
 
-	<groupId>com.example</groupId>
-	<artifactId>accountRest</artifactId>
+	<groupId>com.myproject</groupId>
+	<artifactId>account-rest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>AccountRest</name>
-	<description>Demo project for Spring Boot</description>
+	<name>account-rest</name>
+	<description>That project require managing users(and also access to authorization), tasks</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
@@ -75,12 +75,6 @@
             <version>RELEASE</version>
             <scope>compile</scope>
         </dependency>
-		<dependency>
-			<groupId>org.jetbrains</groupId>
-			<artifactId>annotations</artifactId>
-			<version>24.0.0</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 
 

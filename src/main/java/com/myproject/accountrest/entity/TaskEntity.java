@@ -1,6 +1,6 @@
 package com.myproject.accountrest.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class TaskEntity {
     private Long id;
     private String title;
     private boolean completed;
-    @JsonIgnore
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;

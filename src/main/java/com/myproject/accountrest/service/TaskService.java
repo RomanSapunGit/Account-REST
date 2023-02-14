@@ -1,7 +1,8 @@
 package com.myproject.accountrest.service;
 
-import com.myproject.accountrest.accountinterface.AccountConverter;
-import com.myproject.accountrest.accountinterface.UserAuth;
+import com.myproject.accountrest.accountinterface.TaskConverter;
+import com.myproject.accountrest.accountinterface.UserConverter;
+import com.myproject.accountrest.accountinterface.UserAuthorization;
 import com.myproject.accountrest.accountinterface.UserTasks;
 import com.myproject.accountrest.dto.ResponseTaskDTO;
 import com.myproject.accountrest.dto.TaskDTO;
@@ -21,13 +22,15 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService implements UserTasks {
     @Autowired
-    private UserAuth auth;
+    private UserAuthorization auth;
     @Autowired
     private UserRepository userRepo;
     @Autowired
     private TaskRepository taskRepo;
     @Autowired
-    private AccountConverter converter;
+    private UserConverter userConverter;
+    @Autowired
+    private TaskConverter taskConverter;
 
     @Override
     public TaskDTO createTask(TaskDTO taskDTO) throws UserNotFoundException {
@@ -36,54 +39,61 @@ public class TaskService implements UserTasks {
         task.setTitle(taskDTO.getTitle());
         task.setCompleted(taskDTO.isCompleted());
         task.setUser(user);
-        return converter.convertToTaskDTO(Objects.requireNonNull(taskRepo.save(task)));
+        taskRepo.save(task);
+        return taskDTO;
     }
 
     @Override
     public TaskDTO deleteTask(Long id) throws TaskNotFoundException, UserNotFoundException {
         TaskEntity deleteTask = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
         UserEntity user = auth.findUserByAuth();
-        List<TaskEntity> taskEntityList = user.getTask().stream().filter(deleteTask::equals).toList();
-        if (taskEntityList.isEmpty()) {
+        if (deleteTask.getUser().equals(user)) {
             throw new TaskNotFoundException();
         }
         taskRepo.deleteById(id);
-        return converter.convertToTaskDTO(deleteTask);
+        return taskConverter.convertToTaskDTO(deleteTask, new TaskDTO());
     }
 
     @Override
-    public List<TaskDTO> updateTask(List<TaskDTO> updatedTasksDTO) {
-        return updatedTasksDTO.stream().map(this::updateTask).collect(Collectors.toList());
+    public List<TaskDTO> updateTasks(List<TaskDTO> updatedTasksDTO) throws UserNotFoundException, TaskNotFoundException {
+        UserEntity user = auth.findUserByAuth();
+        List<TaskDTO> taskDTOS = updatedTasksDTO
+                .stream()
+                .filter(entity -> user.getTask()
+                        .stream()
+                        .map(taskEntity -> taskConverter.convertToTaskDTO(taskEntity, new TaskDTO()))
+                        .anyMatch(task -> task.getId().equals(entity.getId())))
+                .toList();
+        if (!taskDTOS.isEmpty()) {
+            return taskDTOS.stream().map(this::updateTask).collect(Collectors.toList());
+        }
+        throw new TaskNotFoundException();
     }
 
     @Override
     public TaskDTO searchTaskById(Long id) throws UserNotFoundException, TaskNotFoundException {
         UserEntity userAuth = auth.findUserByAuth();
         TaskEntity searchedTask = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
-        List<TaskDTO> taskList = userAuth.getTask()
-                .stream()
-                .filter(searchedTask::equals)
-                .map(converter::convertToTaskDTO)
-                .toList();
-        if (taskList.isEmpty()) {
+        if (searchedTask.getUser().equals(userAuth)) {
+            return taskConverter.convertToTaskDTO(searchedTask, new TaskDTO());
+        } else {
             if (searchedTask.isCompleted()) {
-                return converter.convertToTaskDTO(searchedTask);
+                return taskConverter.convertToTaskDTO(searchedTask, new TaskDTO());
             } else {
                 throw new TaskNotFoundException();
             }
         }
-        return taskList.get(0);
     }
 
     @Override
     public List<ResponseTaskDTO> searchTasksByTitle(String searchTitle) throws UserNotFoundException, TaskNotFoundException {
         UserEntity userAuth = auth.findUserByAuth();
-        List<TaskEntity> list = MatchTasksByTitle(searchTitle, userAuth.getTask());
+        List<TaskEntity> list = matchTasksByTitle(searchTitle, userAuth.getTask());
         if (list.isEmpty()) {
-            return handleListByUsername(list);
+            List<TaskEntity> taskEntities = taskRepo.getAllByCompleted(true);
+            return handleListByUsername(matchTasksByTitle(searchTitle, taskEntities));
         }
-        List<TaskEntity> taskEntities = taskRepo.getAllByCompleted(true);
-        return handleListByUsername(MatchTasksByTitle(searchTitle, taskEntities));
+        return handleListByUsername(list);
     }
 
     private List<ResponseTaskDTO> handleListByUsername(List<TaskEntity> list) throws TaskNotFoundException {
@@ -98,7 +108,7 @@ public class TaskService implements UserTasks {
         List<List<ResponseTaskDTO>> newList = new ArrayList<>(list.stream()
                 .map(userRepo::getByTask)
                 .distinct()
-                .map(user -> listOfTaskEntities.stream().map(converter::convertToListDTO).map
+                .map(user -> listOfTaskEntities.stream().map(taskConverter::convertToListDTO).map
                                 (taskDTOS -> new ResponseTaskDTO(user.getUsername(), taskDTOS))
                         .collect(Collectors.toList()))
                 .toList());
@@ -109,9 +119,10 @@ public class TaskService implements UserTasks {
         TaskEntity task = taskRepo.findById(taskDTO.getId()).orElseThrow();
         task.setTitle(taskDTO.getTitle());
         task.setCompleted(taskDTO.isCompleted());
-        return converter.convertToTaskDTO(taskRepo.save(task));
+        return taskConverter.convertToTaskDTO(taskRepo.save(task), new TaskDTO());
     }
-    private List<TaskEntity> MatchTasksByTitle(String searchTitle, List<TaskEntity> listToCheck){
+
+    private List<TaskEntity> matchTasksByTitle(String searchTitle, List<TaskEntity> listToCheck) {
         return listToCheck
                 .stream()
                 .filter(task -> task.getTitle().startsWith(searchTitle))

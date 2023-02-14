@@ -1,8 +1,8 @@
 package com.myproject.accountrest.service;
 
-import com.myproject.accountrest.accountinterface.AccountConverter;
-import com.myproject.accountrest.accountinterface.AccountUser;
-import com.myproject.accountrest.accountinterface.UserAuth;
+import com.myproject.accountrest.accountinterface.UserConverter;
+import com.myproject.accountrest.accountinterface.User;
+import com.myproject.accountrest.accountinterface.UserAuthorization;
 import com.myproject.accountrest.dto.ChangeUserRoleDTO;
 import com.myproject.accountrest.dto.ResponseUserRoleDTO;
 import com.myproject.accountrest.dto.UserDTO;
@@ -14,24 +14,22 @@ import com.myproject.accountrest.exception.ValuesAreEqualException;
 import com.myproject.accountrest.repository.RoleRepository;
 import com.myproject.accountrest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 @Service
-public class UserService implements AccountUser {
+public class UserService implements User {
     private final static String USER_DATA_UPDATED = ", data updated";
     @Autowired
-    private UserAuth auth;
+    private UserAuthorization auth;
     @Autowired
     private RoleRepository roleRepo;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
     @Autowired
     private UserRepository userRepo;
     @Autowired
-    private AccountConverter converter;
+    private UserConverter userConverter;
 
     @Override
     public String updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
@@ -61,6 +59,6 @@ public class UserService implements AccountUser {
             }
         user.setRoles(userRoles);
         userRepo.save(user);
-        return converter.convertToResponseAuthorityDTO(user);
+        return userConverter.convertToResponseAuthorityDTO(user);
     }
 }
