@@ -1,6 +1,6 @@
 package com.myproject.accountrest.controller;
 
-import com.myproject.accountrest.accountinterface.UserTasks;
+import com.myproject.accountrest.service.interfaces.UserTasks;
 import com.myproject.accountrest.dto.ResponseTaskDTO;
 import com.myproject.accountrest.dto.TaskDTO;
 import com.myproject.accountrest.exception.TaskNotFoundException;
@@ -17,8 +17,12 @@ import java.util.List;
 @RequestMapping("/api/tasks")
 
 public class TaskController {
+    private final UserTasks userTasks;
+
     @Autowired
-    private UserTasks userTasks;
+    public TaskController(UserTasks userTasks) {
+        this.userTasks = userTasks;
+    }
 
 
     @PostMapping("/add")
@@ -33,7 +37,7 @@ public class TaskController {
 
     @GetMapping("/search")
     public ResponseEntity<List<ResponseTaskDTO>> searchTasks(@RequestParam String title) throws UserNotFoundException, TaskNotFoundException {
-        return new ResponseEntity<>(userTasks.searchTasksByTitle( title), HttpStatus.FOUND);
+        return new ResponseEntity<>(userTasks.searchTasksByTitle(title), HttpStatus.FOUND);
     }
 
     @PostMapping("/update")

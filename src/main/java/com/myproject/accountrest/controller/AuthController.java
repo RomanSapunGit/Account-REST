@@ -1,8 +1,7 @@
 package com.myproject.accountrest.controller;
 
-import com.myproject.accountrest.accountinterface.User;
-import com.myproject.accountrest.accountinterface.UserResetPass;
-import com.myproject.accountrest.accountinterface.UserAuthorization;
+import com.myproject.accountrest.service.interfaces.UserResetPass;
+import com.myproject.accountrest.service.interfaces.UserAuthorization;
 import com.myproject.accountrest.dto.ResetPassDTO;
 import com.myproject.accountrest.dto.SignInDTO;
 import com.myproject.accountrest.dto.SignUpDTO;
@@ -10,7 +9,6 @@ import com.myproject.accountrest.exception.*;
 import com.myproject.accountrest.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +19,15 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    private UserResetPass resetPass;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserAuthorization userAuthorization;
-    @Autowired
-    private User accUser;
+    private final UserResetPass resetPass;
+    private final UserRepository userRepository;
+    private final UserAuthorization userAuthorization;
+
+    public AuthController(UserResetPass resetPass, UserRepository userRepository, UserAuthorization userAuthorization) {
+        this.resetPass = resetPass;
+        this.userRepository = userRepository;
+        this.userAuthorization = userAuthorization;
+    }
 
     @PostMapping("/sign-in")
     public ResponseEntity<?> authenticateUser(@RequestBody SignInDTO signInDTO) {

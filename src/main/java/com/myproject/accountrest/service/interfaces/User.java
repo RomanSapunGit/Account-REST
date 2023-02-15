@@ -1,4 +1,4 @@
-package com.myproject.accountrest.accountinterface;
+package com.myproject.accountrest.service.interfaces;
 
 import com.myproject.accountrest.dto.ChangeUserRoleDTO;
 import com.myproject.accountrest.dto.ResponseUserRoleDTO;

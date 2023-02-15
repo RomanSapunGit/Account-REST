@@ -1,4 +1,4 @@
-package com.myproject.accountrest.accountinterface;
+package com.myproject.accountrest.service.interfaces;
 
 import com.myproject.accountrest.dto.ResetPassDTO;
 import com.myproject.accountrest.exception.TokenExpiredException;

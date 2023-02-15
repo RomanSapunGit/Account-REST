@@ -1,4 +1,4 @@
-package com.myproject.accountrest.accountinterface;
+package com.myproject.accountrest.util.interfaces;
 
 import com.myproject.accountrest.dto.TaskDTO;
 import com.myproject.accountrest.entity.TaskEntity;

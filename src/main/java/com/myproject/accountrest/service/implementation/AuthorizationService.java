@@ -1,8 +1,8 @@
-package com.myproject.accountrest.service;
+package com.myproject.accountrest.service.implementation;
 
-import com.myproject.accountrest.accountinterface.UserConverter;
-import com.myproject.accountrest.accountinterface.UserResetPass;
-import com.myproject.accountrest.accountinterface.UserAuthorization;
+import com.myproject.accountrest.util.interfaces.UserConverter;
+import com.myproject.accountrest.service.interfaces.UserResetPass;
+import com.myproject.accountrest.service.interfaces.UserAuthorization;
 import com.myproject.accountrest.dto.ResetPassDTO;
 import com.myproject.accountrest.dto.SignInDTO;
 import com.myproject.accountrest.dto.SignUpDTO;
@@ -36,7 +36,7 @@ import java.util.UUID;
 
 @Service
 public class AuthorizationService implements UserAuthorization, UserResetPass {
-    private static final String SUBJECT_TO_MAILSENDER = "Here's the link to reset your password";
+    private static final String SUBJECT_TO_MAIL = "Here's the link to reset your password";
     private static final String CONTENT_FIRST_PART = """
             Hello,
             You have requested to reset your password.
@@ -45,20 +45,24 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
             Ignore this email if you do remember your password,
             or you have not made the request.""";
     private static final long EXPIRE_TOKEN_AFTER_MINUTES = 30;
-    @Autowired
-    private JavaMailSender mailSender;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private RoleRepository roleRepo;
-    @Autowired
-    private UserRepository userRepo;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private UserConverter userConverter;
+    private final JavaMailSender mailSender;
+    private final AuthenticationManager authenticationManager;
+    private final RoleRepository roleRepo;
+    private final UserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
+    private final UserConverter userConverter;
     @Value("${mail.username}")
     private String emailSupport;
+
+    @Autowired
+    public AuthorizationService(JavaMailSender mailSender, AuthenticationManager authenticationManager, RoleRepository roleRepo, UserRepository userRepo, PasswordEncoder passwordEncoder, UserConverter userConverter) {
+        this.mailSender = mailSender;
+        this.authenticationManager = authenticationManager;
+        this.roleRepo = roleRepo;
+        this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
+        this.userConverter = userConverter;
+    }
 
 
     @Override
@@ -101,13 +105,13 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
         UriComponents uriComponents = UriComponentsBuilder
                 .fromHttpUrl(GetSiteURL.getSiteURL(request))
                 .path("/api/auth/reset-password")
-                .queryParam( "token", userToken)
+                .queryParam("token", userToken)
                 .build();
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
         helper.setFrom(emailSupport, "Support");
         helper.setTo(email);
-        helper.setSubject(SUBJECT_TO_MAILSENDER);
+        helper.setSubject(SUBJECT_TO_MAIL);
         helper.setText(CONTENT_FIRST_PART + uriComponents + " " + CONTENT_SECOND_PART, true);
         mailSender.send(message);
     }
@@ -143,6 +147,7 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
         Duration diff = Duration.between(tokenCreationDate, now);
         return diff.toMinutes() >= EXPIRE_TOKEN_AFTER_MINUTES;
     }
+
     private String setTokensByEmail(String email) throws UserNotFoundException {
         UserEntity user = userRepo.findByEmail(email).orElseThrow(UserNotFoundException::new);
         user.setToken(generateToken());

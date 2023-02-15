@@ -1,9 +1,8 @@
-package com.myproject.accountrest.service;
+package com.myproject.accountrest.service.implementation;
 
-import com.myproject.accountrest.accountinterface.TaskConverter;
-import com.myproject.accountrest.accountinterface.UserConverter;
-import com.myproject.accountrest.accountinterface.UserAuthorization;
-import com.myproject.accountrest.accountinterface.UserTasks;
+import com.myproject.accountrest.util.interfaces.TaskConverter;
+import com.myproject.accountrest.service.interfaces.UserAuthorization;
+import com.myproject.accountrest.service.interfaces.UserTasks;
 import com.myproject.accountrest.dto.ResponseTaskDTO;
 import com.myproject.accountrest.dto.TaskDTO;
 import com.myproject.accountrest.entity.TaskEntity;
@@ -21,16 +20,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class TaskService implements UserTasks {
+    private final UserAuthorization auth;
+    private final UserRepository userRepo;
+    private final TaskRepository taskRepo;
+    private final TaskConverter taskConverter;
     @Autowired
-    private UserAuthorization auth;
-    @Autowired
-    private UserRepository userRepo;
-    @Autowired
-    private TaskRepository taskRepo;
-    @Autowired
-    private UserConverter userConverter;
-    @Autowired
-    private TaskConverter taskConverter;
+    public TaskService(UserAuthorization auth, UserRepository userRepo, TaskRepository taskRepo, TaskConverter taskConverter) {
+        this.auth = auth;
+        this.userRepo = userRepo;
+        this.taskRepo = taskRepo;
+        this.taskConverter = taskConverter;
+    }
 
     @Override
     public TaskDTO createTask(TaskDTO taskDTO) throws UserNotFoundException {

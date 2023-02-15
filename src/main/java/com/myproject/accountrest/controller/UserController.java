@@ -1,6 +1,6 @@
 package com.myproject.accountrest.controller;
 
-import com.myproject.accountrest.accountinterface.User;
+import com.myproject.accountrest.service.interfaces.User;
 import com.myproject.accountrest.dto.ChangeUserRoleDTO;
 import com.myproject.accountrest.dto.UserDTO;
 import com.myproject.accountrest.exception.RoleNotFoundException;
@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    private final User user;
     @Autowired
-    private User user;
+    public UserController(User user) {
+        this.user = user;
+    }
+
     @PostMapping("/change-authority")
     public ResponseEntity<?> changeUserAuthority(@RequestBody ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
        return new ResponseEntity<>(user.changeUserAuthority(changeUserRoleDTO), HttpStatus.OK);

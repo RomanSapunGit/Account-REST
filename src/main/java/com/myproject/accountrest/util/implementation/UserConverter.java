@@ -1,4 +1,4 @@
-package com.myproject.accountrest.util;
+package com.myproject.accountrest.util.implementation;
 
 import com.myproject.accountrest.dto.ResponseUserRoleDTO;
 import com.myproject.accountrest.dto.SignUpDTO;
@@ -12,9 +12,13 @@ import org.springframework.stereotype.Component;
 import java.util.stream.Collectors;
 
 @Component
-public class UserConverter implements com.myproject.accountrest.accountinterface.UserConverter {
+public class UserConverter implements com.myproject.accountrest.util.interfaces.UserConverter {
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserConverter(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public UserDTO convertToUserDTO(UserEntity entity, UserDTO userDTO) {
