@@ -30,9 +30,9 @@ public class UserConverter implements com.myproject.accountrest.util.interfaces.
 
     @Override
     public UserEntity convertToUserEntity(SignUpDTO signUpDTO, UserEntity entity) {
-        entity.setName(entity.getName());
-        entity.setUsername(entity.getUsername());
-        entity.setEmail(entity.getEmail());
+        entity.setName(signUpDTO.getName());
+        entity.setUsername(signUpDTO.getUsername());
+        entity.setEmail(signUpDTO.getEmail());
         entity.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
         return entity;
     }

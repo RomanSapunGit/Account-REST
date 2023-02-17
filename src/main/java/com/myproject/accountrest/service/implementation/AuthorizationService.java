@@ -51,7 +51,7 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final UserConverter userConverter;
-    @Value("${mail.username}")
+    @Value("${MAIL_USERNAME}")
     private String emailSupport;
 
     @Autowired
@@ -66,7 +66,7 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
 
 
     @Override
-    public UserDTO addNewUser(SignUpDTO signUpDto) throws RoleNotFoundException, UserDataAlreadyExistException {
+    public UserDTO addNewUser(SignUpDTO signUpDto) throws UserDataAlreadyExistException {
         if (userRepo.findByUsername(signUpDto.getUsername()).isPresent()) {
             throw new UserDataAlreadyExistException(signUpDto.getUsername());
         } else if (userRepo.findByEmail(signUpDto.getEmail()).isPresent()) {
@@ -82,7 +82,7 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
 
     @Override
     public ResetPassDTO resetPassword(String token, ResetPassDTO resetPassDTO) throws UserNotFoundException,
-            ValuesAreNotEqualException, TokenExpiredException {
+            ValuesAreNotEqualException {
         if (!resetPassDTO.getPassword().equals(resetPassDTO.getMatchPassword())) {
             throw new ValuesAreNotEqualException();
         }
