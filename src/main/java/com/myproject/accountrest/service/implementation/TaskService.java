@@ -10,7 +10,6 @@ import com.myproject.accountrest.entity.UserEntity;
 import com.myproject.accountrest.exception.TaskNotFoundException;
 import com.myproject.accountrest.exception.UserNotFoundException;
 import com.myproject.accountrest.repository.TaskRepository;
-import com.myproject.accountrest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +20,12 @@ import java.util.stream.Collectors;
 @Service
 public class TaskService implements UserTasks {
     private final UserAuthorization auth;
-    private final UserRepository userRepo;
     private final TaskRepository taskRepo;
     private final TaskConverter taskConverter;
+
     @Autowired
-    public TaskService(UserAuthorization auth, UserRepository userRepo, TaskRepository taskRepo, TaskConverter taskConverter) {
+    public TaskService(UserAuthorization auth, TaskRepository taskRepo, TaskConverter taskConverter) {
         this.auth = auth;
-        this.userRepo = userRepo;
         this.taskRepo = taskRepo;
         this.taskConverter = taskConverter;
     }
@@ -86,7 +84,7 @@ public class TaskService implements UserTasks {
     }
 
     @Override
-    public List<ResponseTaskDTO> searchTasksByTitle(String searchTitle) throws UserNotFoundException, TaskNotFoundException {
+    public Set<ResponseTaskDTO> searchTasksByTitle(String searchTitle) throws UserNotFoundException {
         UserEntity userAuth = auth.findUserByAuth();
         List<TaskEntity> list = matchTasksByTitle(searchTitle, userAuth.getTask());
         if (list.isEmpty()) {
@@ -96,23 +94,15 @@ public class TaskService implements UserTasks {
         return handleListByUsername(list);
     }
 
-    private List<ResponseTaskDTO> handleListByUsername(List<TaskEntity> list) throws TaskNotFoundException {
-        HashSet<List<TaskEntity>> sortedSet = new HashSet<>();
-        List<List<TaskEntity>> listOfTaskEntities = new ArrayList<>(list.stream()
-                .map(userRepo::getByTask)
-                .map(user -> list.stream()
-                        .map(task -> taskRepo.getTaskEntityByUserAndId(user, task.getId()))
-                        .filter(Objects::nonNull).toList())
-                .toList());
-        listOfTaskEntities.removeIf(taskList -> !sortedSet.add(taskList));
-        List<List<ResponseTaskDTO>> newList = new ArrayList<>(list.stream()
-                .map(userRepo::getByTask)
-                .distinct()
-                .map(user -> listOfTaskEntities.stream().map(taskConverter::convertToListDTO).map
-                                (taskDTOS -> new ResponseTaskDTO(user.getUsername(), taskDTOS))
-                        .collect(Collectors.toList()))
-                .toList());
-        return newList.stream().findFirst().orElseThrow(TaskNotFoundException::new);
+    private Set<ResponseTaskDTO> handleListByUsername(List<TaskEntity> list) {
+        return list.stream()
+                .map(taskEntity -> new ResponseTaskDTO(taskEntity.getUser().getUsername(),
+                        taskEntity.getUser().getTask()
+                                .stream()
+                                .filter(userTaskEntity -> list.stream().anyMatch(userTaskEntity::equals))
+                                .map(userTaskEntity -> taskConverter.convertToTaskDTO(userTaskEntity, new TaskDTO()))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toSet());
     }
 
     private TaskDTO updateTask(TaskDTO taskDTO) {

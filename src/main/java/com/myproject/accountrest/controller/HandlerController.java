@@ -1,6 +1,6 @@
 package com.myproject.accountrest.controller;
 
-import com.myproject.accountrest.dto.ResponseExceptionDTO;
+import com.myproject.accountrest.controller.controllerdto.ResponseExceptionDTO;
 import com.myproject.accountrest.exception.*;
 import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
@@ -24,9 +24,10 @@ public class HandlerController {
             UnsupportedEncodingException.class, UserDataAlreadyExistException.class})
     protected ResponseExceptionDTO handleConflict(Exception exception) {
         return ResponseExceptionDTO.builder()
-                .exception(exception.toString())
+                .exception(exception.getClass().getName())
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
                 .timestamp(Timestamp.from(ZonedDateTime.now().toInstant()))
+                .message(exception.getMessage())
                 .build();
     }
 

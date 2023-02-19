@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 
 @RestController
@@ -36,7 +37,7 @@ public class TaskController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ResponseTaskDTO>> searchTasks(@RequestParam String title) throws UserNotFoundException, TaskNotFoundException {
+    public ResponseEntity<Set<ResponseTaskDTO>> searchTasks(@RequestParam String title) throws UserNotFoundException, TaskNotFoundException {
         return new ResponseEntity<>(userTasks.searchTasksByTitle(title), HttpStatus.FOUND);
     }
 

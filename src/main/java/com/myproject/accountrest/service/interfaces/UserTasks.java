@@ -6,6 +6,7 @@ import com.myproject.accountrest.exception.TaskNotFoundException;
 import com.myproject.accountrest.exception.UserNotFoundException;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserTasks {
 
@@ -17,6 +18,6 @@ public interface UserTasks {
 
     TaskDTO searchTaskById(Long id) throws UserNotFoundException, TaskNotFoundException;
 
-    List<ResponseTaskDTO> searchTasksByTitle(String searchTitle) throws UserNotFoundException, TaskNotFoundException;
+    Set<ResponseTaskDTO> searchTasksByTitle(String searchTitle) throws UserNotFoundException, TaskNotFoundException;
 
 }

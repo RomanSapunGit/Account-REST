@@ -1,4 +1,4 @@
-package com.myproject.accountrest.dto;
+package com.myproject.accountrest.controller.controllerdto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -14,4 +14,6 @@ public class ResponseExceptionDTO {
     private Timestamp timestamp;
     @JsonProperty("status")
     private HttpStatusCode statusCode;
+    @JsonProperty("message")
+    private String message;
 }
