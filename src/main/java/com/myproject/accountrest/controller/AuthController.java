@@ -25,22 +25,26 @@ public class AuthController {
         this.resetPass = resetPass;
         this.userAuthorization = userAuthorization;
     }
-    @ResponseStatus(HttpStatus.OK)
+
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/sign-in")
     public SignInDTO authenticateUser(@RequestBody SignInDTO signInDTO) {
         return userAuthorization.signInUser(signInDTO);
     }
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/signup")
-    public UserDTO registerUser(@RequestBody SignUpDTO signUpDto) throws UserDataAlreadyExistException{
+    public UserDTO registerUser(@RequestBody SignUpDTO signUpDto) throws UserDataAlreadyExistException {
         return userAuthorization.addNewUser(signUpDto);
     }
+
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/reset-password")
     public void forgotPassword(@RequestParam String email, HttpServletRequest request)
             throws UnsupportedEncodingException, UserNotFoundException, MessagingException {
         resetPass.sendEmail(email, request);
     }
+
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/reset-password")
     public ResetPassDTO resetPassword(@RequestParam String token, @RequestBody ResetPassDTO resetPassDTO)

@@ -34,7 +34,7 @@ public class UserService implements User {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
+    public UserDTO updateUser( UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
         UserEntity user = auth.findUserByAuth();
         if (user.getUsername().equals(newUserData.getUsername()) && user.getEmail().equals(newUserData.getEmail())
                 && user.getName().equals(newUserData.getName())) {
@@ -50,7 +50,7 @@ public class UserService implements User {
     }
 
     @Override
-    public ResponseUserRoleDTO changeUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
+    public ResponseUserRoleDTO changeUserAuthority( ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
         UserEntity user = userRepo.findByUsername(changeUserRoleDTO.getUsername()).orElseThrow(UserNotFoundException::new);
         RoleEntity role = roleRepo.findByName(changeUserRoleDTO.getRole()).orElseThrow(RoleNotFoundException::new);
         Set<RoleEntity> userRoles = user.getRoles();
