@@ -1,4 +1,4 @@
-package com.myproject.accountrest.controller.controllerdto;
+package com.myproject.accountrest.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;

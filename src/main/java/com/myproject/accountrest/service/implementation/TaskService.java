@@ -45,7 +45,7 @@ public class TaskService implements UserTasks {
     public TaskDTO deleteTask(Long id) throws TaskNotFoundException, UserNotFoundException {
         TaskEntity deleteTask = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
         UserEntity user = auth.findUserByAuth();
-        if (deleteTask.getUser().equals(user)) {
+        if (!deleteTask.getUser().equals(user)) {
             throw new TaskNotFoundException();
         }
         taskRepo.deleteById(id);
@@ -89,15 +89,17 @@ public class TaskService implements UserTasks {
         List<TaskEntity> list = matchTasksByTitle(searchTitle, userAuth.getTask());
         if (list.isEmpty()) {
             List<TaskEntity> taskEntities = taskRepo.getAllByCompleted(true);
-            return handleListByUsername(matchTasksByTitle(searchTitle, taskEntities));
+            return sortArrayByUser(matchTasksByTitle(searchTitle, taskEntities));
         }
-        return handleListByUsername(list);
+        return sortArrayByUser(list);
     }
 
-    private Set<ResponseTaskDTO> handleListByUsername(List<TaskEntity> list) {
+    private Set<ResponseTaskDTO> sortArrayByUser(List<TaskEntity> list) {
         return list.stream()
-                .map(taskEntity -> new ResponseTaskDTO(taskEntity.getUser().getUsername(),
-                        taskEntity.getUser().getTask()
+                .map(TaskEntity::getUser)
+                .distinct()
+                .map(user -> new ResponseTaskDTO(user.getUsername(),
+                        user.getTask()
                                 .stream()
                                 .filter(userTaskEntity -> list.stream().anyMatch(userTaskEntity::equals))
                                 .map(userTaskEntity -> taskConverter.convertToTaskDTO(userTaskEntity, new TaskDTO()))

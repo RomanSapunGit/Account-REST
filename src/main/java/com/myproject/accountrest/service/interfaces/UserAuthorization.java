@@ -7,6 +7,7 @@ import com.myproject.accountrest.entity.UserEntity;
 import com.myproject.accountrest.exception.RoleNotFoundException;
 import com.myproject.accountrest.exception.UserDataAlreadyExistException;
 import com.myproject.accountrest.exception.UserNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 public interface UserAuthorization {
@@ -16,4 +17,6 @@ public interface UserAuthorization {
     SignInDTO signInUser(SignInDTO signInDTO);
 
     UserEntity findUserByAuth() throws UserNotFoundException;
+
+    String getSiteURL(HttpServletRequest request);
 }

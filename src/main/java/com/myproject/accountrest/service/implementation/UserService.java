@@ -20,7 +20,6 @@ import java.util.Set;
 
 @Service
 public class UserService implements User {
-    private final static String USER_DATA_UPDATED = ", data updated";
     private final UserAuthorization auth;
     private final RoleRepository roleRepo;
     private final UserRepository userRepo;
@@ -35,7 +34,7 @@ public class UserService implements User {
     }
 
     @Override
-    public String updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
+    public UserDTO updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
         UserEntity user = auth.findUserByAuth();
         if (user.getUsername().equals(newUserData.getUsername()) && user.getEmail().equals(newUserData.getEmail())
                 && user.getName().equals(newUserData.getName())) {
@@ -47,7 +46,7 @@ public class UserService implements User {
         user.setUsername(newUserData.getUsername());
         user.setEmail(newUserData.getEmail());
         userRepo.save(user);
-        return user.getName() + USER_DATA_UPDATED;
+        return newUserData;
     }
 
     @Override

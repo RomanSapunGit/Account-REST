@@ -1,5 +1,6 @@
 package com.myproject.accountrest.controller;
 
+import com.myproject.accountrest.dto.UserDTO;
 import com.myproject.accountrest.service.interfaces.UserResetPass;
 import com.myproject.accountrest.service.interfaces.UserAuthorization;
 import com.myproject.accountrest.dto.ResetPassDTO;
@@ -9,7 +10,6 @@ import com.myproject.accountrest.exception.*;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -25,28 +25,27 @@ public class AuthController {
         this.resetPass = resetPass;
         this.userAuthorization = userAuthorization;
     }
-
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/sign-in")
-    public ResponseEntity<?> authenticateUser(@RequestBody SignInDTO signInDTO) {
-        return new ResponseEntity<>(userAuthorization.signInUser(signInDTO), HttpStatus.OK);
+    public SignInDTO authenticateUser(@RequestBody SignInDTO signInDTO) {
+        return userAuthorization.signInUser(signInDTO);
     }
-
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody SignUpDTO signUpDto) throws UserDataAlreadyExistException{
-        return new ResponseEntity<>(userAuthorization.addNewUser(signUpDto), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/signup")
+    public UserDTO registerUser(@RequestBody SignUpDTO signUpDto) throws UserDataAlreadyExistException{
+        return userAuthorization.addNewUser(signUpDto);
     }
-
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/reset-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email, HttpServletRequest request)
+    public void forgotPassword(@RequestParam String email, HttpServletRequest request)
             throws UnsupportedEncodingException, UserNotFoundException, MessagingException {
         resetPass.sendEmail(email, request);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    @ResponseStatus(HttpStatus.OK)
     @PutMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam String token, @RequestBody ResetPassDTO resetPassDTO)
+    public ResetPassDTO resetPassword(@RequestParam String token, @RequestBody ResetPassDTO resetPassDTO)
             throws UserNotFoundException, ValuesAreNotEqualException {
-        return new ResponseEntity<>(resetPass.resetPassword(token, resetPassDTO), HttpStatus.OK);
+        return resetPass.resetPassword(token, resetPassDTO);
     }
 }
 

@@ -1,6 +1,6 @@
 package com.myproject.accountrest.controller;
 
-import com.myproject.accountrest.controller.controllerdto.ResponseExceptionDTO;
+import com.myproject.accountrest.dto.ResponseExceptionDTO;
 import com.myproject.accountrest.exception.*;
 import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;

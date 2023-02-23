@@ -103,7 +103,7 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
             throws MessagingException, UnsupportedEncodingException, UserNotFoundException {
         String userToken = setTokensByEmail(email);
         UriComponents uriComponents = UriComponentsBuilder
-                .fromHttpUrl(GetSiteURL.getSiteURL(request))
+                .fromHttpUrl(getSiteURL(request))
                 .path("/api/auth/reset-password")
                 .queryParam("token", userToken)
                 .build();
@@ -129,18 +129,19 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userRepo.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
     }
+    @Override
+    public String getSiteURL(HttpServletRequest request) {
+        String siteURL = request.getRequestURL().toString();
+        return siteURL.replace(request.getServletPath(), "");
+
+    }
 
     private String generateToken() {
         StringBuilder token = new StringBuilder();
         return String.valueOf(token.append(UUID.randomUUID()));
     }
 
-    private static class GetSiteURL {
-        public static String getSiteURL(HttpServletRequest request) {
-            String siteURL = request.getRequestURL().toString();
-            return siteURL.replace(request.getServletPath(), "");
-        }
-    }
+
 
     private boolean isTokenExpired(final LocalDateTime tokenCreationDate) {
         LocalDateTime now = LocalDateTime.now();

@@ -1,5 +1,6 @@
 package com.myproject.accountrest.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,8 +10,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResetPassDTO {
-@NotEmpty
+    @JsonProperty
+    @NotEmpty
     private String password;
-@NotEmpty
+    @JsonProperty
+    @NotEmpty
     private String matchPassword;
 }

@@ -7,7 +7,6 @@ import com.myproject.accountrest.exception.TaskNotFoundException;
 import com.myproject.accountrest.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,29 +24,33 @@ public class TaskController {
         this.userTasks = userTasks;
     }
 
-
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/add")
-    public ResponseEntity<TaskDTO> addNewTask(@RequestBody TaskDTO taskDTO) throws UserNotFoundException {
-        return new ResponseEntity<>(userTasks.createTask(taskDTO), HttpStatus.CREATED);
+    public TaskDTO addNewTask(@RequestBody TaskDTO taskDTO) throws UserNotFoundException {
+        return userTasks.createTask(taskDTO);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/find")
-    public ResponseEntity<TaskDTO> findTaskById(@RequestParam Long id) throws UserNotFoundException, TaskNotFoundException {
-        return new ResponseEntity<>(userTasks.searchTaskById(id), HttpStatus.FOUND);
+    public TaskDTO findTaskById(@RequestParam Long id) throws UserNotFoundException, TaskNotFoundException {
+        return userTasks.searchTaskById(id);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/search")
-    public ResponseEntity<Set<ResponseTaskDTO>> searchTasks(@RequestParam String title) throws UserNotFoundException, TaskNotFoundException {
-        return new ResponseEntity<>(userTasks.searchTasksByTitle(title), HttpStatus.FOUND);
+    public Set<ResponseTaskDTO> searchTasks(@RequestParam String title) throws UserNotFoundException, TaskNotFoundException {
+        return userTasks.searchTasksByTitle(title);
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<List<TaskDTO>> updateTask(@RequestBody List<TaskDTO> taskDTO) throws UserNotFoundException, TaskNotFoundException {
-        return new ResponseEntity<>(userTasks.updateTasks(taskDTO), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/update")
+    public List<TaskDTO> updateTask(@RequestBody List<TaskDTO> taskDTO) throws UserNotFoundException, TaskNotFoundException {
+        return userTasks.updateTasks(taskDTO);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/delete")
-    public ResponseEntity<TaskDTO> deleteTask(@RequestParam Long id) throws TaskNotFoundException, UserNotFoundException {
-        return new ResponseEntity<>(userTasks.deleteTask(id), HttpStatus.OK);
+    public TaskDTO deleteTask(@RequestParam Long id) throws TaskNotFoundException, UserNotFoundException {
+        return userTasks.deleteTask(id);
     }
 }

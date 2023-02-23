@@ -8,7 +8,7 @@ import com.myproject.accountrest.exception.ValuesAreEqualException;
 
 public interface User {
 
-    String updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException;
+    UserDTO updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException;
 
     ResponseUserRoleDTO changeUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException;
 
