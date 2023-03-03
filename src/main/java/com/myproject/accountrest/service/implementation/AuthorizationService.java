@@ -45,6 +45,7 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
             Ignore this email if you do remember your password,
             or you have not made the request.""";
     private static final long EXPIRE_TOKEN_AFTER_MINUTES = 30;
+    private static final String USER_ROLE = "ROLE_ADMIN";
     private final JavaMailSender mailSender;
     private final AuthenticationManager authenticationManager;
     private final RoleRepository roleRepo;
@@ -55,7 +56,9 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
     private String emailSupport;
 
     @Autowired
-    public AuthorizationService(JavaMailSender mailSender, AuthenticationManager authenticationManager, RoleRepository roleRepo, UserRepository userRepo, PasswordEncoder passwordEncoder, UserConverter userConverter) {
+    public AuthorizationService(JavaMailSender mailSender, AuthenticationManager authenticationManager,
+                                RoleRepository roleRepo, UserRepository userRepo, PasswordEncoder passwordEncoder,
+                                UserConverter userConverter) {
         this.mailSender = mailSender;
         this.authenticationManager = authenticationManager;
         this.roleRepo = roleRepo;
@@ -67,14 +70,12 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
 
     @Override
     public UserDTO addNewUser(SignUpDTO signUpDto) throws UserDataAlreadyExistException {
-        if (userRepo.findByUsername(signUpDto.getUsername()).isPresent()) {
+        if (userRepo.findByUsername(signUpDto.getUsername()).isPresent() || userRepo.findByEmail(signUpDto.getEmail()).isPresent()) {
             throw new UserDataAlreadyExistException(signUpDto.getUsername());
-        } else if (userRepo.findByEmail(signUpDto.getEmail()).isPresent()) {
-            throw new UserDataAlreadyExistException(signUpDto.getEmail());
         }
         UserEntity user = userConverter.convertToUserEntity(signUpDto, new UserEntity());
-        RoleEntity roles = roleRepo.findByName("ROLE_USER").orElseThrow(RoleNotFoundException::new);
-        user.setRoles(Collections.singleton(roles));
+        RoleEntity role = roleRepo.findByName(USER_ROLE).orElseThrow(RoleNotFoundException::new);
+        user.setRoles(Collections.singleton(role));
         userRepo.save(user);
         return userConverter.convertToUserDTO(user, new UserDTO());
     }
@@ -129,6 +130,7 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return userRepo.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
     }
+
     @Override
     public String getSiteURL(HttpServletRequest request) {
         String siteURL = request.getRequestURL().toString();
@@ -136,11 +138,11 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
 
     }
 
+
     private String generateToken() {
         StringBuilder token = new StringBuilder();
         return String.valueOf(token.append(UUID.randomUUID()));
     }
-
 
 
     private boolean isTokenExpired(final LocalDateTime tokenCreationDate) {

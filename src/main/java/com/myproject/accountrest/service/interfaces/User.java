@@ -11,5 +11,4 @@ public interface User {
     UserDTO updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException;
 
     ResponseUserRoleDTO changeUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException;
-
 }

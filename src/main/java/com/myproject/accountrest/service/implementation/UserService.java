@@ -16,7 +16,7 @@ import com.myproject.accountrest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+
 
 @Service
 public class UserService implements User {
@@ -34,14 +34,11 @@ public class UserService implements User {
     }
 
     @Override
-    public UserDTO updateUser( UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
+    public UserDTO updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
         UserEntity user = auth.findUserByAuth();
         if (user.getUsername().equals(newUserData.getUsername()) && user.getEmail().equals(newUserData.getEmail())
                 && user.getName().equals(newUserData.getName())) {
             throw new ValuesAreEqualException();
-        }
-        if (newUserData.getName() != null) {
-            user.setName(newUserData.getName());
         }
         user.setUsername(newUserData.getUsername());
         user.setEmail(newUserData.getEmail());
@@ -50,16 +47,14 @@ public class UserService implements User {
     }
 
     @Override
-    public ResponseUserRoleDTO changeUserAuthority( ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
+    public ResponseUserRoleDTO changeUserAuthority(ChangeUserRoleDTO changeUserRoleDTO) throws UserNotFoundException, RoleNotFoundException {
         UserEntity user = userRepo.findByUsername(changeUserRoleDTO.getUsername()).orElseThrow(UserNotFoundException::new);
         RoleEntity role = roleRepo.findByName(changeUserRoleDTO.getRole()).orElseThrow(RoleNotFoundException::new);
-        Set<RoleEntity> userRoles = user.getRoles();
-        if (changeUserRoleDTO.getAction().equals("add")) {
-            userRoles.add(role);
-        } else {
-            userRoles.remove(role);
-        }
-        user.setRoles(userRoles);
+            if (changeUserRoleDTO.getAction().equals("add")) {
+                user.getRoles().add(role);
+            } else {
+                user.getRoles().remove(role);
+            }
         userRepo.save(user);
         return userConverter.convertToResponseAuthorityDTO(user);
     }

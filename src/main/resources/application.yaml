@@ -1,30 +1,30 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5455/postgresDB
+    url: jdbc:postgresql://postgres_db:5432/postgresDB
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
-    show-sql : true
-    hibernate :
-     ddl-auto : update
+    show-sql: true
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
-        dialect : org.hibernate.dialect.PostgreSQLDialect
-        format_sql : true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
   mail:
-    host : smtp.gmail.com
-    username : ${MAIL_USERNAME}
-    password : ${MAIL_PASSWORD}
-    port : 587
+    host: smtp.gmail.com
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    port: 587
     properties:
-     mail:
-      smtp :
-        auth : true
-        starttls:
-          enable : true
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 logging:
   level:
-   org :
-    springframework :
-     web : TRACE
-     hibernate : ERROR
+    org:
+      springframework:
+        web: TRACE
+        hibernate: ERROR

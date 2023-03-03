@@ -26,14 +26,14 @@ public class AuthController {
         this.userAuthorization = userAuthorization;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/sign-in")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/sign-in")
     public SignInDTO authenticateUser(@RequestBody SignInDTO signInDTO) {
         return userAuthorization.signInUser(signInDTO);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/signup")
     public UserDTO registerUser(@RequestBody SignUpDTO signUpDto) throws UserDataAlreadyExistException {
         return userAuthorization.addNewUser(signUpDto);
     }

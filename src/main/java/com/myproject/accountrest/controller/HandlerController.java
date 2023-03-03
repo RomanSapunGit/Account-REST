@@ -21,7 +21,8 @@ public class HandlerController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {UserNotFoundException.class, TaskNotFoundException.class,
             MessagingException.class, ValuesAreEqualException.class, ValuesAreNotEqualException.class,
-            UnsupportedEncodingException.class, UserDataAlreadyExistException.class})
+            UnsupportedEncodingException.class, UserDataAlreadyExistException.class, RoleNotFoundException.class,
+            EmptyStackException.class, TokenExpiredException.class})
     protected ResponseExceptionDTO handleConflict(Exception exception) {
         return ResponseExceptionDTO.builder()
                 .exception(exception.getClass().getName())
@@ -34,16 +35,5 @@ public class HandlerController {
     @ExceptionHandler(value = {NullPointerException.class})
     protected ErrorResponse handleNullPointerWithCustomMessage() {
         return ErrorResponse.builder(new Throwable(), HttpStatus.INTERNAL_SERVER_ERROR, MISSED_PARAMETERS_MESSAGE).build();
-    }
-
-
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(value = {RoleNotFoundException.class, EmptyStackException.class, TokenExpiredException.class})
-    protected ResponseExceptionDTO handleRuntimeConflict(RuntimeException exception) {
-        return ResponseExceptionDTO.builder()
-                .exception(exception.toString())
-                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
-                .timestamp(Timestamp.from(ZonedDateTime.now().toInstant()))
-                .build();
     }
 }

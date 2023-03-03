@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,17 +32,21 @@ class AccountRestApplicationTests {
     @Value("${USER_PASSWORD}")
     private String password;
 
+    @DisplayName("Searching tasks by title works properly")
     @Test
     public void searchTasksByTitle_worksCorrectly_true() {
         List<Integer> listToCheck = Arrays.asList(19, 20, 25);
         UriComponents uriComponents = setURLWithQuery();
         RequestSpecification authRequest = RestAssured.given().auth().basic(username, password);
         Response response = authRequest.get(uriComponents.toString());
-        response.then().assertThat().statusCode(200).and().body("tasksList[0].id", equalTo(listToCheck));
+        response.then().assertThat().statusCode(200)
+                .and()
+                .body("tasksList[0].id", equalTo(listToCheck));
     }
 
+    @DisplayName("Changing authority works correctly when user use secured request")
     @Test
-    public void changeUserAuthority_worksCorrectly_true() throws JSONException {
+    public void changeUserAuthority_worksCorrectlyInSearchTasksByTitle_true() throws JSONException {
         JSONObject requestBody = new JSONObject();
         requestBody.put("username", username);
         requestBody.put("action", "add");

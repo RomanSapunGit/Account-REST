@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  account_app:
+    build: .
+    container_name: accountApp
+    environment:
+      - DB_PASSWORD
+      - DB_USERNAME
+      - MAIL_USERNAME
+      - MAIL_PASSWORD
+    ports:
+      - "8000:8080"
+    restart: unless-stopped
+    depends_on:
+      - postgres_db
+
+  postgres_db:
+    image: 'postgres:15-alpine'
+    container_name: postgresDB
+    environment:
+      - POSTGRES_DB=postgresDB
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+volumes:
+  postgres-data:

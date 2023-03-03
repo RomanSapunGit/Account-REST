@@ -11,5 +11,5 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<TaskEntity, Long> {
     Optional<TaskEntity> findById(Long id);
 
-    List<TaskEntity> getAllByCompleted(Boolean completed);
+    List<TaskEntity> getFirst20ByCompleted(Boolean completed);
 }

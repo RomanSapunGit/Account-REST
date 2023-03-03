@@ -88,7 +88,7 @@ public class TaskService implements UserTasks {
         UserEntity userAuth = auth.findUserByAuth();
         List<TaskEntity> list = matchTasksByTitle(searchTitle, userAuth.getTask());
         if (list.isEmpty()) {
-            List<TaskEntity> taskEntities = taskRepo.getAllByCompleted(true);
+            List<TaskEntity> taskEntities = taskRepo.getFirst20ByCompleted(true);
             return sortArrayByUser(matchTasksByTitle(searchTitle, taskEntities));
         }
         return sortArrayByUser(list);
