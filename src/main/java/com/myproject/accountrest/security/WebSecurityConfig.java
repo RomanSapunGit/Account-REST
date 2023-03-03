@@ -45,6 +45,7 @@ public class WebSecurityConfig {
                     try {
                         authorize.requestMatchers(HttpMethod.POST, "/api/auth/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                                 .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/users/create-authorities").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
