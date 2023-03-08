@@ -33,7 +33,7 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/find")
     public TaskDTO findTaskById(@RequestParam Long id) throws UserNotFoundException, TaskNotFoundException {
-        return userTasks.searchTaskById(id);
+        return userTasks.findTaskById(id);
     }
 
     @ResponseStatus(HttpStatus.OK)

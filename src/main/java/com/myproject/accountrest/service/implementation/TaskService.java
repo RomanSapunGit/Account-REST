@@ -38,6 +38,7 @@ public class TaskService implements UserTasks {
         task.setCompleted(taskDTO.isCompleted());
         task.setUser(user);
         taskRepo.save(task);
+        taskDTO.setId(task.getId());
         return taskDTO;
     }
 
@@ -69,19 +70,15 @@ public class TaskService implements UserTasks {
     }
 
     @Override
-    public TaskDTO searchTaskById(Long id) throws UserNotFoundException, TaskNotFoundException {
+    public TaskDTO findTaskById(Long id) throws UserNotFoundException, TaskNotFoundException {
         UserEntity userAuth = auth.findUserByAuth();
         TaskEntity searchedTask = taskRepo.findById(id).orElseThrow(TaskNotFoundException::new);
-        if (searchedTask.getUser().equals(userAuth)) {
+        if (searchedTask.getUser().equals(userAuth) || searchedTask.isCompleted()) {
             return taskConverter.convertToTaskDTO(searchedTask, new TaskDTO());
-        } else {
-            if (searchedTask.isCompleted()) {
-                return taskConverter.convertToTaskDTO(searchedTask, new TaskDTO());
-            } else {
-                throw new TaskNotFoundException();
-            }
         }
+        throw new TaskNotFoundException();
     }
+
 
     @Override
     public Set<ResponseTaskDTO> searchTasksByTitle(String searchTitle) throws UserNotFoundException {
@@ -89,12 +86,12 @@ public class TaskService implements UserTasks {
         List<TaskEntity> list = matchTasksByTitle(searchTitle, userAuth.getTask());
         if (list.isEmpty()) {
             List<TaskEntity> taskEntities = taskRepo.getFirst20ByCompleted(true);
-            return sortArrayByUser(matchTasksByTitle(searchTitle, taskEntities));
+            return sortListOfTasksByUser(matchTasksByTitle(searchTitle, taskEntities));
         }
-        return sortArrayByUser(list);
+        return sortListOfTasksByUser(list);
     }
 
-    private Set<ResponseTaskDTO> sortArrayByUser(List<TaskEntity> list) {
+    private Set<ResponseTaskDTO> sortListOfTasksByUser(List<TaskEntity> list) {
         return list.stream()
                 .map(TaskEntity::getUser)
                 .distinct()
@@ -107,11 +104,11 @@ public class TaskService implements UserTasks {
                 .collect(Collectors.toSet());
     }
 
-    private TaskDTO updateTask(TaskDTO taskDTO) {
-        TaskEntity task = taskRepo.findById(taskDTO.getId()).orElseThrow();
+    private TaskDTO updateTask(TaskDTO taskDTO) throws TaskNotFoundException {
+        TaskEntity task = taskRepo.findById(taskDTO.getId()).orElseThrow(TaskNotFoundException::new);
         task.setTitle(taskDTO.getTitle());
         task.setCompleted(taskDTO.isCompleted());
-        return taskConverter.convertToTaskDTO(taskRepo.save(task), new TaskDTO());
+        return taskConverter.convertToTaskDTO(taskRepo.save(task), taskDTO);
     }
 
     private List<TaskEntity> matchTasksByTitle(String searchTitle, List<TaskEntity> listToCheck) {

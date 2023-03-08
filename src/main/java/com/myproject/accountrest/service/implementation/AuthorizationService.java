@@ -36,6 +36,7 @@ import java.util.UUID;
 
 @Service
 public class AuthorizationService implements UserAuthorization, UserResetPass {
+    private static final String URL_PATH = "/api/auth/reset-password";
     private static final String SUBJECT_TO_MAIL = "Here's the link to reset your password";
     private static final String CONTENT_FIRST_PART = """
             Hello,
@@ -105,7 +106,7 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
         String userToken = setTokensByEmail(email);
         UriComponents uriComponents = UriComponentsBuilder
                 .fromHttpUrl(getSiteURL(request))
-                .path("/api/auth/reset-password")
+                .path(URL_PATH)
                 .queryParam("token", userToken)
                 .build();
         MimeMessage message = mailSender.createMimeMessage();
@@ -131,8 +132,8 @@ public class AuthorizationService implements UserAuthorization, UserResetPass {
         return userRepo.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
     }
 
-    @Override
-    public String getSiteURL(HttpServletRequest request) {
+
+    private String getSiteURL(HttpServletRequest request) {
         String siteURL = request.getRequestURL().toString();
         return siteURL.replace(request.getServletPath(), "");
 

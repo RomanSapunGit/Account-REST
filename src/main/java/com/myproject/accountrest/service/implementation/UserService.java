@@ -67,8 +67,7 @@ public class UserService implements User {
     public List<String> createAuthorities() throws UserDataAlreadyExistException {
         List<String> listOfRoles = ROLES.stream()
                 .filter(role -> !roleRepo.existsByName(role))
-                .map(role -> userConverter.convertToRoleEntity(role, new RoleEntity()))
-                .map(RoleEntity::getName)
+                .map(role -> userConverter.convertToRoleEntity(role, new RoleEntity()).getName())
                 .toList();
         if (listOfRoles.isEmpty()) {
             throw new UserDataAlreadyExistException(ROLES.toString());
