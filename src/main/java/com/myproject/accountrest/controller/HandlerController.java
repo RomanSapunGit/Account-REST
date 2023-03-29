@@ -20,7 +20,7 @@ public class HandlerController {
     private static final String MISSED_PARAMETERS_MESSAGE = "One or several parameters was missing";
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = {UserNotFoundException.class, TaskNotFoundException.class,
-            MessagingException.class, ValuesAreEqualException.class, ValuesAreNotEqualException.class,
+            MessagingException.class, ValuesAreNotEqualException.class,
             UnsupportedEncodingException.class, UserDataAlreadyExistException.class, RoleNotFoundException.class,
             EmptyStackException.class, TokenExpiredException.class})
     protected ResponseExceptionDTO handleConflict(Exception exception) {

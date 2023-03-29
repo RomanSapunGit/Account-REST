@@ -11,7 +11,6 @@ import com.myproject.accountrest.entity.RoleEntity;
 import com.myproject.accountrest.entity.UserEntity;
 import com.myproject.accountrest.exception.RoleNotFoundException;
 import com.myproject.accountrest.exception.UserNotFoundException;
-import com.myproject.accountrest.exception.ValuesAreEqualException;
 import com.myproject.accountrest.repository.RoleRepository;
 import com.myproject.accountrest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +37,8 @@ public class UserService implements User {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO newUserData) throws UserNotFoundException, ValuesAreEqualException {
+    public UserDTO updateUser(UserDTO newUserData) throws UserNotFoundException {
         UserEntity user = auth.findUserByAuth();
-        if (user.getUsername().equals(newUserData.getUsername()) && user.getEmail().equals(newUserData.getEmail())
-                && user.getName().equals(newUserData.getName())) {
-            throw new ValuesAreEqualException();
-        }
         user.setUsername(newUserData.getUsername());
         user.setEmail(newUserData.getEmail());
         userRepo.save(user);
